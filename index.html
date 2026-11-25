@@ -260,6 +260,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 .chip-row{display:flex;flex-wrap:wrap;gap:7px}
 .chip{font-size:11.5px;padding:3px 9px;border-radius:20px;background:#f2f6f4;color:var(--ink-2);font-weight:550}
 
+/* 移动端导航 */
+.mnav{display:none;gap:6px;overflow-x:auto;padding:8px 14px;background:#fff;border-bottom:1px solid var(--line);
+  position:sticky;top:56px;z-index:25;-webkit-overflow-scrolling:touch}
+.mnav::-webkit-scrollbar{display:none}
+.mnav button{flex:0 0 auto;font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:20px;
+  background:#f3f7f5;color:var(--ink-2);transition:.15s}
+.mnav button.on{background:var(--green-soft);color:var(--green-deep)}
+
 @media(max-width:1180px){
   .g4{grid-template-columns:repeat(2,1fr)}
   .g-2-1{grid-template-columns:1fr}
@@ -267,13 +275,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 }
 @media(max-width:860px){
   .sidebar{display:none}
-  .content{padding:16px}
-  .topbar{padding:0 16px}
-  .g4{grid-template-columns:1fr 1fr}
+  .mnav{display:flex}
+  .content{padding:14px 14px 50px}
+  .topbar{height:56px;padding:0 14px}
+  .topbar .crumb{display:none}
+  .topbar h1{font-size:14.5px}
+  #btn-reset{display:none}
+  .btn{padding:8px 12px;font-size:12.5px}
+  .g4{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi-val{font-size:21px}
   .form-grid{grid-template-columns:1fr}
   .chain{flex-direction:column}
-  .chain-arrow{transform:rotate(90deg);height:24px}
+  .chain-arrow{transform:rotate(90deg);height:24px;flex:0 0 24px}
   .chain-node{min-width:0}
+  .flow-sum{flex-direction:column;align-items:stretch}
+  .flow-arrow{transform:rotate(90deg);justify-self:center;margin:0 auto}
+  .flow-box{flex:1 1 auto}
+  .bar-legend{flex-wrap:wrap;gap:8px 12px}
+  .lg{white-space:nowrap}
+  .match-head{align-items:flex-start}
+  .match-foot{gap:6px 12px}
 }
 </style>
 </head>
@@ -345,6 +366,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
         </button>
       </div>
     </header>
+
+    <nav class="mnav" id="mnav">
+      <button data-view="overview" class="on">总览</button>
+      <button data-view="match">撮合</button>
+      <button data-view="supply">供给</button>
+      <button data-view="proc">加工</button>
+      <button data-view="demand">需求</button>
+    </nav>
 
     <div class="content">
 
@@ -1337,6 +1366,10 @@ function renderMatchView(){
         </div>
       </div>
       ${legs}
+      ${m.left > 0.5 ? `<div style="padding:0 16px 12px;display:flex;align-items:flex-start;gap:7px;font-size:11.8px;color:#b23b42;line-height:1.6">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--red);flex:0 0 6px;margin-top:6px"></span>
+        <span>仍有 <b>${fmt(m.left)} 吨</b> ${esc(s.type)} 未匹配到加工厂 —— 区域内该品类产能不足，建议扩产或跨区调度</span>
+      </div>` : ''}
       <div class="match-foot">
         <span>交易额预估 <b class="num">¥${fmt(m.legs.reduce((a,l)=>a+l.value,0))}</b></span>
         <span>未消纳废物 <b class="num" style="color:${m.left>0.5?'var(--red)':'var(--green)'}">${fmt(m.left)} 吨</b></span>
@@ -1394,6 +1427,7 @@ const VIEW_META = {
 function switchView(v){
   if (!document.getElementById('view-'+v)) return;
   $$('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view === v));
+  $$('.mnav button').forEach(b=>b.classList.toggle('on', b.dataset.view === v));
   $$('.view').forEach(s=>s.classList.toggle('active', s.id === 'view-'+v));
   const meta = VIEW_META[v] || VIEW_META.overview;
   $('#page-title').textContent = meta[0];
@@ -1403,7 +1437,7 @@ function switchView(v){
 }
 
 function bindNav(){
-  $$('.nav-item').forEach(btn=>{
+  $$('.nav-item, .mnav button').forEach(btn=>{
     btn.addEventListener('click', ()=> switchView(btn.dataset.view));
   });
 }
