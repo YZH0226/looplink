@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 工业废物资源化撮合平台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f3f7f5;
+  --surface:#ffffff;
+  --surface-2:#fafcfb;
+  --ink:#0f231d;
+  --ink-2:#3f574e;
+  --muted:#7e918a;
+  --line:#e3ebe7;
+  --line-2:#eef4f1;
+  --green:#0f8b6c;
+  --green-2:#12a37e;
+  --green-deep:#0a6b53;
+  --green-soft:#e8f6f0;
+  --lime:#7bc043;
+  --lime-soft:#f1f9e8;
+  --amber:#dd8b0b;
+  --amber-soft:#fdf4e4;
+  --red:#d8525a;
+  --red-soft:#fdeeee;
+  --blue:#3778c9;
+  --blue-soft:#eaf2fd;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(15,35,29,.04), 0 10px 28px -16px rgba(15,35,29,.18);
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--line);
+  border-radius:9px;padding:9px 11px;width:100%;outline:none;transition:.15s}
+input:focus,select:focus{border-color:var(--green-2);box-shadow:0 0 0 3px rgba(18,163,126,.12)}
+input::placeholder{color:#a9b8b2}
+
+/* ---------- layout ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{width:232px;flex:0 0 232px;background:#fff;border-right:1px solid var(--line);
+  padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px 20px}
+.brand-mark{width:36px;height:36px;border-radius:11px;flex:0 0 36px;
+  background:linear-gradient(145deg,#14b189,#0a6b53);display:grid;place-items:center;
+  box-shadow:0 8px 18px -8px rgba(15,139,108,.75)}
+.brand-mark svg{width:20px;height:20px}
+.brand-name{font-weight:700;font-size:15.5px;letter-spacing:.2px;line-height:1.2}
+.brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.9px;text-transform:uppercase}
+.nav-label{font-size:10.5px;color:#a7b6b0;letter-spacing:1.2px;padding:12px 12px 6px;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--ink-2);
+  font-size:13.5px;font-weight:500;transition:.16s;border:1px solid transparent;width:100%;text-align:left;margin-bottom:2px}
+.nav-item:hover{background:#f3f8f6}
+.nav-item.active{background:var(--green-soft);color:var(--green-deep);border-color:#cbe9de;font-weight:600}
+.nav-item svg{width:16px;height:16px;flex:0 0 16px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.nav-badge{margin-left:auto;font-size:10.5px;font-weight:700;background:#eef4f1;color:var(--ink-2);
+  padding:1px 6px;border-radius:20px;min-width:20px;text-align:center}
+.nav-item.active .nav-badge{background:#fff;color:var(--green)}
+.side-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
+.dot-live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-right:5px;
+  box-shadow:0 0 0 3px rgba(123,192,67,.18);vertical-align:1px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:0 26px;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.topbar h1{font-size:15px;font-weight:650;letter-spacing:.2px}
+.topbar .crumb{font-size:11.5px;color:var(--muted);margin-top:1px}
+.top-actions{display:flex;align-items:center;gap:10px}
+
+.btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;
+  padding:9px 15px;border-radius:9px;transition:.16s;white-space:nowrap;border:1px solid transparent}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.btn-primary{background:linear-gradient(150deg,#14b189,#0a6b53);color:#fff;box-shadow:0 8px 18px -9px rgba(15,139,108,.85)}
+.btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink-2)}
+.btn-ghost:hover{background:#f5f9f7;border-color:#d3e2db}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:8px}
+
+.content{padding:22px 26px 60px;flex:1}
+.view{display:none;animation:fade .28s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- generic cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:15px 18px;border-bottom:1px solid var(--line-2)}
+.card-title{font-size:13.5px;font-weight:650;letter-spacing:.1px;display:flex;align-items:center;gap:8px}
+.card-title .bar{width:3px;height:14px;border-radius:2px;background:var(--green-2)}
+.card-sub{font-size:11.5px;color:var(--muted)}
+.card-body{padding:18px}
+
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g2{grid-template-columns:1fr 1fr}
+.g-2-1{grid-template-columns:1.55fr 1fr}
+
+/* ---------- kpi ---------- */
+.kpi{padding:16px 17px;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;right:-28px;top:-28px;width:88px;height:88px;border-radius:50%;
+  background:radial-gradient(circle,rgba(18,163,126,.09),transparent 68%)}
+.kpi-top{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+.kpi-ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;flex:0 0 28px}
+.kpi-ico svg{width:15px;height:15px;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.kpi-label{font-size:12px;color:var(--muted);font-weight:550}
+.kpi-val{font-size:25px;font-weight:700;letter-spacing:-.5px;line-height:1.15}
+.kpi-val small{font-size:12px;font-weight:600;color:var(--muted);margin-left:4px;letter-spacing:0}
+.kpi-foot{font-size:11.5px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:5px}
+.trend-up{color:var(--green);font-weight:650}
+.trend-warn{color:var(--amber);font-weight:650}
+
+/* ---------- bars / charts ---------- */
+.bar-row{margin-bottom:14px}
+.bar-row:last-child{margin-bottom:0}
+.bar-head{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:5px}
+.bar-name{font-weight:600;color:var(--ink-2)}
+.bar-val{color:var(--muted);font-size:11.5px}
+.bar-track{height:7px;border-radius:5px;background:#f0f5f2;overflow:hidden;display:flex;gap:3px;margin-bottom:4px}
+.bar-fill{height:100%;border-radius:5px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.bar-legend{display:flex;gap:16px;font-size:11.5px;color:var(--muted);padding:0 18px 4px}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+.util-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line-2)}
+.util-row:last-child{border-bottom:none;padding-bottom:0}
+.util-name{flex:0 0 132px;font-size:12.5px;font-weight:550;color:var(--ink-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.util-track{flex:1;height:8px;border-radius:5px;background:#f0f5f2;overflow:hidden}
+.util-fill{height:100%;border-radius:5px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+.util-pct{flex:0 0 46px;text-align:right;font-size:12px;font-weight:650}
+
+/* ---------- table ---------- */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.8px}
+thead th{text-align:left;font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:.4px;
+  padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fbfdfc}
+.td-strong{font-weight:600;color:var(--ink)}
+.td-mute{color:var(--muted);font-size:11.8px}
+
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+  padding:2.5px 8px;border-radius:6px;white-space:nowrap}
+.tag i{width:6px;height:6px;border-radius:50%;display:inline-block;flex:0 0 6px}
+.tag-soft{background:#f2f6f4;color:var(--ink-2)}
+.tag-green{background:var(--green-soft);color:var(--green-deep)}
+.tag-amber{background:var(--amber-soft);color:#a76a06}
+.tag-red{background:var(--red-soft);color:#b23b42}
+.tag-blue{background:var(--blue-soft);color:#2a63a8}
+.tag-lime{background:var(--lime-soft);color:#4d8217}
+
+/* ---------- forms ---------- */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:600;color:var(--ink-2)}
+.field label span{color:var(--red);margin-left:2px}
+.field .hint{font-size:11px;color:var(--muted);font-weight:400}
+.chk-group{display:flex;flex-wrap:wrap;gap:7px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.3px;padding:6px 10px;border-radius:8px;
+  border:1px solid var(--line);background:#fff;cursor:pointer;transition:.14s;color:var(--ink-2);user-select:none}
+.chk:hover{border-color:#c9ded6;background:#fafcfb}
+.chk input{display:none}
+.chk.on{background:var(--green-soft);border-color:#a9dccb;color:var(--green-deep);font-weight:600}
+.out-row{display:grid;grid-template-columns:1.6fr .8fr auto;gap:8px;margin-bottom:8px;align-items:center}
+.out-row .del{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--muted);
+  border:1px solid var(--line);background:#fff;font-size:15px;line-height:1}
+.out-row .del:hover{color:var(--red);border-color:#f2c9cc;background:var(--red-soft)}
+.form-foot{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;padding-top:15px;border-top:1px solid var(--line-2)}
+.tip{display:flex;gap:9px;align-items:flex-start;margin-top:14px;padding:11px 13px;background:var(--green-soft);
+  border-radius:9px;font-size:11.8px;color:var(--green-deep);line-height:1.65}
+.tip svg{width:14px;height:14px;flex:0 0 14px;margin-top:2px;stroke:currentColor;fill:none;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.tip b{font-weight:700}
+.proc-grid{display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:1240px){.proc-grid{grid-template-columns:1fr}}
+
+/* ---------- match ---------- */
+.match-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--line-2);background:linear-gradient(180deg,#fbfdfc,#fff)}
+.slider-wrap{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--ink-2);font-weight:550}
+input[type=range]{-webkit-appearance:none;width:130px;height:4px;background:#e3ebe7;border-radius:4px;
+  border:none;padding:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--green-2);border:2.5px solid #fff;box-shadow:0 2px 6px rgba(15,139,108,.45);cursor:pointer}
+.range-val{font-weight:700;color:var(--green);min-width:26px;text-align:right}
+
+.match-card{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;
+  background:#fff;transition:.18s}
+.match-card:hover{box-shadow:0 12px 30px -18px rgba(15,35,29,.32);border-color:#cfe3db}
+.match-head{display:flex;align-items:center;gap:13px;padding:13px 16px;background:var(--surface-2);
+  border-bottom:1px solid var(--line-2)}
+.ring{width:44px;height:44px;flex:0 0 44px}
+.match-head-main{flex:1;min-width:0}
+.match-head-title{font-size:13.5px;font-weight:650;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.match-head-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.chain{display:flex;align-items:stretch;gap:0;padding:15px 16px;overflow-x:auto}
+.chain-node{flex:1 1 0;min-width:132px;border:1px solid var(--line);border-radius:10px;padding:10px 11px;
+  background:#fff;position:relative}
+.chain-node.supply{border-left:3px solid #8d99ae;background:linear-gradient(180deg,#fbfcfd,#fff)}
+.chain-node.proc{border-left:3px solid var(--green-2);background:linear-gradient(180deg,#f7fdfa,#fff)}
+.chain-node.out{border-left:3px solid var(--amber);background:linear-gradient(180deg,#fffdf8,#fff)}
+.chain-node.dem{border-left:3px solid var(--blue);background:linear-gradient(180deg,#fafcff,#fff)}
+.chain-tag{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.chain-name{font-size:12.6px;font-weight:650;line-height:1.35;margin-bottom:3px;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.chain-meta{font-size:11px;color:var(--muted);line-height:1.5}
+.chain-meta b{color:var(--ink-2);font-weight:650}
+.chain-arrow{flex:0 0 26px;display:grid;place-items:center;color:#c2d3cb}
+.chain-arrow svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.match-foot{padding:10px 16px;border-top:1px solid var(--line-2);display:flex;flex-wrap:wrap;
+  gap:8px 18px;font-size:11.5px;color:var(--muted);align-items:center;background:#fff}
+.match-foot b{color:var(--ink-2)}
+.sub-alloc{padding:0 16px 14px;font-size:11.5px;color:var(--ink-2)}
+.alloc-line{display:flex;gap:8px;align-items:center;padding:5px 0;border-top:1px dashed var(--line-2)}
+.alloc-bar{height:5px;border-radius:4px;background:var(--green-2);flex:0 0 auto;min-width:4px}
+
+.empty{padding:46px 20px;text-align:center;color:var(--muted)}
+.empty-ico{width:52px;height:52px;border-radius:14px;background:var(--green-soft);display:grid;place-items:center;
+  margin:0 auto 12px}
+.empty-ico svg{width:24px;height:24px;stroke:var(--green-2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.empty-title{font-size:13.5px;font-weight:600;color:var(--ink-2);margin-bottom:4px}
+
+/* flow summary */
+.flow-sum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 18px}
+.flow-box{flex:1 1 150px;border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--surface-2);position:relative}
+.flow-box .fb-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.flow-box .fb-val{font-size:19px;font-weight:700;margin-top:3px;letter-spacing:-.4px}
+.flow-box .fb-val small{font-size:11.5px;font-weight:600;color:var(--muted);margin-left:3px}
+.flow-box .fb-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.flow-arrow{color:#c2d3cb;flex:0 0 22px;display:grid;place-items:center}
+.flow-arrow svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:#0f231d;color:#fff;
+  padding:11px 20px;border-radius:10px;font-size:13px;font-weight:550;opacity:0;pointer-events:none;
+  transition:.28s;z-index:200;box-shadow:0 14px 34px -12px rgba(15,35,29,.5)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast.err{background:#a83a41}
+
+.loading-ov{position:fixed;inset:0;background:rgba(243,247,245,.72);backdrop-filter:blur(3px);
+  display:none;place-items:center;z-index:150}
+.loading-ov.show{display:grid}
+.spinner{width:38px;height:38px;border-radius:50%;border:3px solid #d8e8e1;border-top-color:var(--green-2);
+  animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{margin-top:14px;font-size:12.5px;color:var(--ink-2);font-weight:600;text-align:center}
+
+/* legend chips */
+.chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:11.5px;padding:3px 9px;border-radius:20px;background:#f2f6f4;color:var(--ink-2);font-weight:550}
+
+@media(max-width:1180px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g-2-1{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+}
+@media(max-width:860px){
+  .sidebar{display:none}
+  .content{padding:16px}
+  .topbar{padding:0 16px}
+  .g4{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .chain{flex-direction:column}
+  .chain-arrow{transform:rotate(90deg);height:24px}
+  .chain-node{min-width:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.5 14.5a4 4 0 0 1 0-5.6l3-3a4 4 0 0 1 5.6 0"/>
+          <path d="M19.5 9.5a4 4 0 0 1 0 5.6l-3 3a4 4 0 0 1-5.6 0"/>
+          <path d="M8.5 12h7"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">循链 LoopLink</div>
+        <div class="brand-sub">Waste Matching</div>
+      </div>
+    </div>
+
+    <div class="nav-label">工作台</div>
+    <button class="nav-item active" data-view="overview">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span>平台总览</span>
+    </button>
+    <button class="nav-item" data-view="match">
+      <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M7 12h10"/><circle cx="12" cy="12" r="1.6"/></svg>
+      <span>智能撮合</span>
+      <span class="nav-badge" id="badge-match">0</span>
+    </button>
+
+    <div class="nav-label">三方登记</div>
+    <button class="nav-item" data-view="supply">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5-9 5-9-5z"/><path d="M3 9v6l9 5 9-5V9"/></svg>
+      <span>供给方 · 废物</span>
+      <span class="nav-badge" id="badge-supply">0</span>
+    </button>
+    <button class="nav-item" data-view="proc">
+      <svg viewBox="0 0 24 24"><path d="M3 20h18"/><path d="M5 20V9l4 2V9l4 2V8l4 2v10"/><path d="M9 20v-4h6v4"/></svg>
+      <span>加工厂 · 能力</span>
+      <span class="nav-badge" id="badge-proc">0</span>
+    </button>
+    <button class="nav-item" data-view="demand">
+      <svg viewBox="0 0 24 24"><path d="M6 2h9l4 4v16H6z"/><path d="M15 2v4h4"/><path d="M9 12h7"/><path d="M9 16h5"/></svg>
+      <span>需求方 · 产品</span>
+      <span class="nav-badge" id="badge-demand">0</span>
+    </button>
+
+    <div class="side-foot">
+      <div><span class="dot-live"></span>撮合引擎运行中</div>
+      <div style="margin-top:4px">南昌 · 赣江新区试点</div>
+      <div style="margin-top:4px">演示数据 · 每日 06:00 同步</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="page-title">平台总览</h1>
+        <div class="crumb" id="page-crumb">工业废物资源化撮合 · 供给 / 加工 / 需求 三端联动</div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost btn-sm" id="btn-reset">重置演示数据</button>
+        <button class="btn btn-primary" id="btn-run">
+          <svg viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg>
+          运行智能撮合
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ============ OVERVIEW ============ -->
+      <section class="view active" id="view-overview">
+        <div class="grid g4" id="kpi-grid" style="margin-bottom:14px"></div>
+
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>供给量 vs 加工余量 · 按废物品类</div>
+              <span class="card-sub">单位：吨/月</span>
+            </div>
+            <div class="bar-legend">
+              <span class="lg"><i style="background:#8d99ae"></i>登记供给量</span>
+              <span class="lg"><i style="background:#12a37e"></i>可用加工余量</span>
+              <span class="lg" style="margin-left:auto;color:#a7b6b0">「待消纳」= 再生品暂无买家</span>
+            </div>
+            <div class="card-body" id="chart-supply" style="padding-top:8px"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>加工厂产能利用率</div>
+            </div>
+            <div class="card-body" id="chart-util" style="padding-top:8px"></div>
+          </div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>链路缺口诊断</div>
+              <span class="card-sub">撮合后自动生成</span>
+            </div>
+            <div class="card-body" id="gap-panel"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>最近撮合动态</div>
+            </div>
+            <div class="card-body" style="padding-top:6px" id="feed-panel"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MATCH ============ -->
+      <section class="view" id="view-match">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>撮合结果总览</div>
+            <span class="card-sub" id="match-time">尚未运行</span>
+          </div>
+          <div class="flow-sum" id="match-summary"></div>
+        </div>
+
+        <div class="card">
+          <div class="match-toolbar">
+            <div class="slider-wrap">
+              <span>匹配度阈值</span>
+              <input type="range" id="score-range" min="0" max="95" value="0" step="5">
+              <span class="range-val num" id="score-val">0</span>
+            </div>
+            <div style="flex:1"></div>
+            <div class="chip-row">
+              <span class="chip" id="chip-total">共 0 条链路</span>
+              <span class="chip" id="chip-ok">已闭环 0</span>
+              <span class="chip" id="chip-part">部分匹配 0</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="btn-export">导出撮合方案</button>
+          </div>
+          <div class="card-body" id="match-list" style="padding:16px"></div>
+        </div>
+      </section>
+
+      <!-- ============ SUPPLY ============ -->
+      <section class="view" id="view-supply">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>供给方废物登记</div>
+              <span class="card-sub">登记后自动进入撮合池</span>
+            </div>
+            <div class="card-body">
+              <form id="form-supply" class="form-grid">
+                <div class="field full">
+                  <label>企业名称<span>*</span></label>
+                  <input name="company" required placeholder="如：江西洪都印务有限公司">
+                </div>
+                <div class="field">
+                  <label>废物类型<span>*</span></label>
+                  <select name="type" id="sel-supply-type" required></select>
+                </div>
+                <div class="field">
+                  <label>月产出量（吨）<span>*</span></label>
+                  <input name="qty" type="number" min="1" step="1" required placeholder="如：320">
+                </div>
+                <div class="field">
+                  <label>期望处置单价（元/吨）</label>
+                  <input name="price" type="number" min="0" step="10" placeholder="如：1180">
+                </div>
+                <div class="field">
+                  <label>所在地</label>
+                  <input name="city" placeholder="如：南昌·青山湖">
+                </div>
+                <div class="field full" style="flex-direction:row;justify-content:flex-end">
+                  <button type="submit" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    提交登记
+                  </button>
+                </div>
+              </form>
+              <div class="tip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v.2"/><path d="M12 11v5"/></svg>
+                <div>提交后立即重新撮合：先按<b>废物品类</b>筛出可接收的加工厂 → 校验其<b>产能余量</b> → 按<b>再生品收率</b>折算产出 → 再匹配下游需求方。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>供给结构</div>
+            </div>
+            <div class="card-body" id="supply-structure" style="padding-top:10px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>已登记废物清单</div>
+            <span class="card-sub" id="supply-count"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>企业名称</th><th>废物类型</th><th>月产出量</th><th>期望单价</th>
+                <th>所在地</th><th>可承接加工厂</th><th style="text-align:right">操作</th>
+              </tr></thead>
+              <tbody id="tbody-supply"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROCESSOR ============ -->
+      <section class="view" id="view-proc">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>加工厂处理能力登记</div>
+              <span class="card-sub">处理工艺 + 再生品收率是撮合的关键</span>
+            </div>
+            <div class="card-body">
+              <form id="form-proc" class="form-grid">
+                <div class="field">
+                  <label>工厂名称<span>*</span></label>
+                  <input name="name" required placeholder="如：江西循环再生纸业">
+                </div>
+                <div class="field">
+                  <label>所在地</label>
+                  <input name="city" placeholder="如：南昌·经开区">
+                </div>
+                <div class="field full">
+                  <label>可接收废物类型<span>*</span> <span class="hint">（可多选）</span></label>
+                  <div class="chk-group" id="chk-accepts"></div>
+                </div>
+                <div class="field">
+                  <label>月处理能力（吨）<span>*</span></label>
+                  <input name="cap" type="number" min="1" required placeholder="如：800">
+                </div>
+                <div class="field">
+                  <label>当前已占用（吨）</label>
+                  <input name="load" type="number" min="0" value="0">
+                </div>
+                <div class="field full">
+                  <label>主要产出物与收率 <span class="hint">（收率 = 每吨废物产出吨数）</span></label>
+                  <div id="outs-box"></div>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-add-out" style="align-self:flex-start">+ 增加产出物</button>
+                </div>
+                <div class="field full" style="flex-direction:row;justify-content:flex-end">
+                  <button type="submit" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    提交登记
+                  </button>
+                </div>
+              </form>
+              <div class="tip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v.2"/><path d="M12 11v5"/></svg>
+                <div>产出物名称必须与需求方登记的产品类型<b>完全一致</b>（如「再生纸浆」），否则该产出物无法被撮合，只会出现在「待消纳」中。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>平台产能池</div>
+            </div>
+            <div class="card-body" id="proc-structure" style="padding-top:10px"></div>
+          </div>
+        </div>
+
+        <div id="proc-cards" class="proc-grid"></div>
+      </section>
+
+      <!-- ============ DEMAND ============ -->
+      <section class="view" id="view-demand">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>需求方产品需求登记</div>
+              <span class="card-sub">需求产品需与加工厂产出物同名才能匹配</span>
+            </div>
+            <div class="card-body">
+              <form id="form-demand" class="form-grid">
+                <div class="field full">
+                  <label>企业名称<span>*</span></label>
+                  <input name="company" required placeholder="如：江西晨鸣纸业">
+                </div>
+                <div class="field">
+                  <label>需求产品类型<span>*</span></label>
+                  <input name="type" list="product-list" required placeholder="如：再生纸浆">
+                  <datalist id="product-list"></datalist>
+                </div>
+                <div class="field">
+                  <label>月需求量（吨）<span>*</span></label>
+                  <input name="qty" type="number" min="1" required placeholder="如：500">
+                </div>
+                <div class="field">
+                  <label>可接受单价（元/吨）</label>
+                  <input name="price" type="number" min="0" step="10" placeholder="如：2400">
+                </div>
+                <div class="field">
+                  <label>所在地</label>
+                  <input name="city" placeholder="如：南昌·高新区">
+                </div>
+                <div class="field full" style="flex-direction:row;justify-content:flex-end">
+                  <button type="submit" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    提交登记
+                  </button>
+                </div>
+              </form>
+              <div class="tip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v.2"/><path d="M12 11v5"/></svg>
+                <div>需求产品请填写加工厂的<b>产出物名称</b>，输入框会自动提示平台已有的再生品品类，可直接点选。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>需求满足度</div>
+            </div>
+            <div class="card-body" id="demand-structure" style="padding-top:10px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>已登记产品需求</div>
+            <span class="card-sub" id="demand-count"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>企业名称</th><th>需求产品</th><th>月需求量</th><th>可接受单价</th>
+                <th>所在地</th><th>撮合后满足率</th><th style="text-align:right">操作</th>
+              </tr></thead>
+              <tbody id="tbody-demand"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="loading-ov" id="loading">
+  <div>
+    <div class="spinner" style="margin:0 auto"></div>
+    <div class="loading-txt" id="loading-txt">正在构建撮合链路…</div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. 基础数据
+   ========================================================= */
+const WASTE = {
+  '废纸':      { color:'#c08457', co2:1.8 },
+  '废塑料':    { color:'#5b9bd5', co2:2.5 },
+  '废金属':    { color:'#8d99ae', co2:9.5 },
+  '废玻璃':    { color:'#5cbdb8', co2:0.6 },
+  '废纺织品':  { color:'#b07cc6', co2:3.2 },
+  '废旧锂电池':{ color:'#dd8b0b', co2:4.8 },
+  '废木材':    { color:'#a1785a', co2:1.2 },
+  '餐厨垃圾':  { color:'#7bc043', co2:0.9 },
+  '废橡胶':    { color:'#5f6c7b', co2:2.1 },
+  '电子废弃物':{ color:'#d8525a', co2:5.5 }
+};
+const WASTE_TYPES = Object.keys(WASTE);
+
+const SEED = {
+  supplies: [
+    { id:'S1', company:'江西洪都印务有限公司', type:'废纸',       qty:320, price:1180, city:'南昌·青山湖' },
+    { id:'S2', company:'南昌绿源食品厂',       type:'餐厨垃圾',   qty:150, price:260,  city:'南昌·新建区' },
+    { id:'S3', company:'赣江新区电子装配厂',   type:'电子废弃物', qty:45,  price:900,  city:'南昌·赣江新区' },
+    { id:'S4', company:'江西华勤纺织科技',     type:'废纺织品',   qty:88,  price:540,  city:'南昌·安义' },
+    { id:'S5', company:'南昌宏泰包装材料',     type:'废塑料',     qty:210, price:760,  city:'南昌·经开区' },
+    { id:'S6', company:'洪城汽配制造',         type:'废金属',     qty:260, price:2100, city:'南昌·青云谱' },
+    { id:'S7', company:'江西新能电池制造',     type:'废旧锂电池', qty:60,  price:1800, city:'南昌·高新区' },
+    { id:'S8', company:'南昌赣新玻璃制品',     type:'废玻璃',     qty:120, price:180,  city:'南昌·湾里' },
+    { id:'S9', company:'赣中家居木业',         type:'废木材',     qty:95,  price:220,  city:'南昌·新建区' },
+    { id:'S10',company:'昌北轮胎翻新厂',       type:'废橡胶',     qty:70,  price:410,  city:'南昌·临空' }
+  ],
+  processors: [
+    { id:'P1', name:'江西循环再生纸业', city:'南昌·经开区', rating:4.8,
+      accepts:['废纸'], cap:800, load:420,
+      outputs:[{type:'再生纸浆',ratio:0.82},{type:'纸板',ratio:0.10}] },
+    { id:'P2', name:'赣中塑料再生科技', city:'南昌·高新区', rating:4.6,
+      accepts:['废塑料'], cap:500, load:260,
+      outputs:[{type:'再生塑料粒子',ratio:0.75},{type:'塑料碎片',ratio:0.12}] },
+    { id:'P3', name:'洪城金属熔炼', city:'南昌·青山湖', rating:4.7,
+      accepts:['废金属'], cap:600, load:380,
+      outputs:[{type:'再生金属锭',ratio:0.90}] },
+    { id:'P4', name:'江西玻纤再生', city:'南昌·湾里', rating:4.3,
+      accepts:['废玻璃'], cap:300, load:120,
+      outputs:[{type:'玻璃熟料',ratio:0.85}] },
+    { id:'P5', name:'蓝天电池循环', city:'南昌·临空', rating:4.9,
+      accepts:['废旧锂电池'], cap:200, load:90,
+      outputs:[{type:'黑粉',ratio:0.40},{type:'再生锂盐',ratio:0.12},{type:'再生铜',ratio:0.15}] },
+    { id:'P6', name:'赣鄱纺织再生', city:'南昌·安义', rating:4.5,
+      accepts:['废纺织品'], cap:250, load:110,
+      outputs:[{type:'再生纤维',ratio:0.68},{type:'擦机布',ratio:0.20}] },
+    { id:'P7', name:'绿丰生物处理', city:'南昌·新建区', rating:4.4,
+      accepts:['餐厨垃圾'], cap:400, load:210,
+      outputs:[{type:'工业油脂',ratio:0.08},{type:'有机肥',ratio:0.25}] },
+    { id:'P8', name:'华赣电子拆解', city:'南昌·赣江新区', rating:4.6,
+      accepts:['电子废弃物'], cap:180, load:70,
+      outputs:[{type:'再生铜',ratio:0.22},{type:'贵金属精矿',ratio:0.03},{type:'再生塑料粒子',ratio:0.30}] },
+    { id:'P9', name:'赣林木业再生', city:'南昌·新建区', rating:4.2,
+      accepts:['废木材'], cap:300, load:80,
+      outputs:[{type:'再生板材',ratio:0.60},{type:'生物质燃料',ratio:0.30}] },
+    { id:'P10',name:'昌泰橡胶再生', city:'南昌·临空', rating:4.5,
+      accepts:['废橡胶'], cap:220, load:90,
+      outputs:[{type:'再生胶',ratio:0.55},{type:'胶粉',ratio:0.35}] }
+  ],
+  demands: [
+    { id:'D1', company:'江西晨鸣纸业',     type:'再生纸浆',     qty:320, price:2400,  city:'南昌·高新区' },
+    { id:'D2', company:'南昌恒泰包装',     type:'纸板',         qty:40,  price:2100,  city:'南昌·经开区' },
+    { id:'D3', company:'赣新汽车零部件',   type:'再生塑料粒子', qty:190, price:8600,  city:'南昌·高新区' },
+    { id:'D4', company:'江铃铸造',         type:'再生金属锭',   qty:220, price:15800, city:'南昌·青云谱' },
+    { id:'D5', company:'洪城建材集团',     type:'玻璃熟料',     qty:140, price:780,   city:'南昌·湾里' },
+    { id:'D6', company:'江西华锂新材料',   type:'黑粉',         qty:30,  price:32000, city:'宜春·袁州' },
+    { id:'D7', company:'赣远新能源',       type:'再生锂盐',     qty:10,  price:68000, city:'宜春·经开区' },
+    { id:'D8', company:'南昌家纺集团',     type:'再生纤维',     qty:110, price:5200,  city:'南昌·安义' },
+    { id:'D9', company:'绿康农业科技',     type:'有机肥',       qty:180, price:950,   city:'南昌·新建区' },
+    { id:'D10',company:'赣能生物柴油',     type:'工业油脂',     qty:20,  price:5400,  city:'南昌·临空' },
+    { id:'D11',company:'昌北电子材料',     type:'再生铜',       qty:25,  price:62000, city:'南昌·赣江新区' },
+    { id:'D12',company:'赣泰新材料',       type:'再生胶',       qty:110, price:3800,  city:'南昌·临空' },
+    { id:'D13',company:'洪州热电',         type:'生物质燃料',   qty:35,  price:620,   city:'南昌·新建区' },
+    { id:'D14',company:'南昌森工板材',     type:'再生板材',     qty:120, price:1450,  city:'南昌·安义' }
+  ]
+};
+
+let state = { supplies:[], processors:[], demands:[], matches:[], lastRun:null, threshold:0 };
+let seq = 1000;
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* =========================================================
+   2. 工具
+   ========================================================= */
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n,d=0) => Number(n).toLocaleString('zh-CN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct = n => (n*100).toFixed(0)+'%';
+
+function toast(msg, isErr){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'show' + (isErr ? ' err' : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>{ t.className=''; }, 2400);
+}
+
+/* =========================================================
+   3. 撮合引擎
+   -------------------------------------------------
+   核心：对每条「废物」寻找加工厂 → 把废物按收率拆成再生品
+        → 把再生品分配给有该产品需求的需求方
+        → 按 5 个维度打分
+   ========================================================= */
+function computeMatches(){
+  const procState = state.processors.map(p => ({
+    ref:p, free: Math.max(0, p.cap - p.load), free0: Math.max(0, p.cap - p.load)
+  }));
+  const demState = state.demands.map(d => ({ ref:d, need: d.qty, need0: d.qty }));
+  const results = [];
+  const usedProc = {};   // 工厂累计吃进量
+  const usedDem  = {};   // 需求方累计获得量
+
+  state.supplies.forEach(s => {
+    let left = s.qty;
+    const legs = [];
+
+    const cands = procState
+      .filter(p => p.free > 0 && p.ref.accepts.includes(s.type))
+      .map(p => ({ st:p, pre: scoreLeg(s, p, null, demState) }))
+      .sort((a,b) => b.pre - a.pre || b.st.free - a.st.free);
+
+    cands.forEach(({st}) => {
+      if (left <= 0) return;
+      const p = st.ref;
+      const take = Math.min(left, st.free);
+      if (take <= 0) return;
+
+      // 产出物
+      const outputs = p.outputs
+        .filter(o => o.ratio > 0)
+        .map(o => ({ type:o.type, qty: take * o.ratio, ratio:o.ratio }));
+
+      // 分配产出物给需求方
+      const allocs = [];
+      let outTotal = outputs.reduce((a,b)=>a+b.qty, 0);
+      let outMatched = 0;
+      outputs.forEach(o => {
+        let q = o.qty;
+        const ds = demState
+          .filter(d => d.need > 1e-6 && d.ref.type === o.type)
+          .sort((a,b) => b.ref.price - a.ref.price);
+        ds.forEach(d => {
+          if (q <= 1e-6) return;
+          const use = Math.min(q, d.need);
+          d.need -= use; q -= use;
+          outMatched += use;
+          usedDem[d.ref.id] = (usedDem[d.ref.id]||0) + use;
+          allocs.push({ demand:d.ref, product:o.type, qty:use, price:d.ref.price });
+        });
+        if (q > 1e-6) allocs.push({ demand:null, product:o.type, qty:q, price:null });
+      });
+
+      const coverage = outTotal > 0 ? outMatched / outTotal : 0;
+      const score = scoreLeg(s, { ref:p, free:take, free0:st.free0 }, allocs, null, take, left, coverage);
+
+      legs.push({
+        processor:p, take, outputs, allocs, coverage, score,
+        value: allocs.filter(a=>a.demand).reduce((a,b)=>a+b.qty*b.price, 0),
+        distance: distKey(s.city, p.city)
+      });
+
+      st.free -= take;
+      left -= take;
+      usedProc[p.id] = (usedProc[p.id]||0) + take;
+    });
+
+    // 汇总
+    const matchedQty = s.qty - left;
+    const totalOut = legs.reduce((a,l)=>a+l.outputs.reduce((x,y)=>x+y.qty,0), 0);
+    const totalOutMatched = legs.reduce((a,l)=>a+l.allocs.filter(x=>x.demand).reduce((x,y)=>x+y.qty,0), 0);
+    const avgScore = legs.length
+      ? legs.reduce((a,l)=>a + l.score*l.take, 0) / Math.max(matchedQty,1) : 0;
+
+    results.push({
+      supply:s, legs, left, matchedQty, totalOut, totalOutMatched,
+      score: Math.round(avgScore),
+      status: left <= 1e-6 ? 'closed' : (matchedQty > 0 ? 'partial' : 'failed'),
+      co2: matchedQty * (WASTE[s.type]?.co2 || 1)
+    });
+  });
+
+  // 未满足的需求
+  const unmet = demState.filter(d => d.need > 1e-6).map(d => ({ ref:d.ref, need:d.need }));
+
+  state.matches = results;
+  state.unmet = unmet;
+  state.usedProc = usedProc;
+  state.usedDem = usedDem;
+  state.lastRun = new Date();
+}
+
+function distKey(a,b){
+  const city = x => String(x||'').split('·')[0];
+  if (!a || !b) return 0.5;
+  if (a === b) return 1;
+  if (city(a) === city(b)) return 0.75;
+  return 0.4;
+}
+
+/* 打分：品类 40 / 产能满足 20 / 产出需求覆盖 25 / 区域 8 / 评级 7 */
+function scoreLeg(s, p, allocs, demState, take, left, coverage){
+  const W = 40 + 20 + 25 + 8 + 7;
+  const free = p.free != null ? p.free : Math.max(0, p.ref.cap - p.ref.load);
+  const capFit  = Math.min(1, free / Math.max(left != null ? left : s.qty, 1));
+  const cov     = coverage != null ? coverage : 0.4;
+  const dist    = distKey(s.city, p.ref.city);
+  const rating  = (p.ref.rating || 4) / 5;
+  const raw = 40*1 + 20*capFit + 25*cov + 8*dist + 7*rating;
+  return Math.round(raw / W * 100);
+}
+
+/* =========================================================
+   4. 渲染 · 总览
+   ========================================================= */
+function renderOverview(){
+  const totalSupply = state.supplies.reduce((a,s)=>a+s.qty,0);
+  const totalCap    = state.processors.reduce((a,p)=>a+p.cap,0);
+  const freeCap     = state.processors.reduce((a,p)=>a+Math.max(0,p.cap-p.load),0);
+  const totalDemand = state.demands.reduce((a,d)=>a+d.qty,0);
+
+  const matchedQty = state.matches.reduce((a,m)=>a+m.matchedQty,0);
+  const closedCnt  = state.matches.filter(m=>m.status==='closed').length;
+  const co2        = state.matches.reduce((a,m)=>a+m.co2,0);
+  const outMatched = state.matches.reduce((a,m)=>a+m.totalOutMatched,0);
+  const outTotal   = state.matches.reduce((a,m)=>a+m.totalOut,0);
+  const demRate    = totalDemand > 0 ? outMatched/totalDemand : 0;
+  const matchRate  = totalSupply > 0 ? matchedQty/totalSupply : 0;
+  const avgScore   = state.matches.length
+    ? Math.round(state.matches.reduce((a,m)=>a+m.score,0)/state.matches.length) : 0;
+
+  const kpis = [
+    { label:'登记废物总量', val: fmt(totalSupply), unit:'吨/月',
+      foot:`${state.supplies.length} 家供给方 · ${WASTE_TYPES.length} 类废物`,
+      ico:'M3 9l9-5 9 5-9 5-9-5z', bg:'var(--blue-soft)', cl:'#3778c9' },
+    { label:'撮合消纳量', val: fmt(matchedQty), unit:'吨/月',
+      foot:`<span class="trend-up">${pct(matchRate)}</span> 的废物已找到承接方`,
+      ico:'M4 12l5 5L20 6', bg:'var(--green-soft)', cl:'var(--green-2)' },
+    { label:'再生品需求满足率', val: pct(demRate), unit:'',
+      foot:`产出 ${fmt(outTotal)} 吨 · 已消纳 ${fmt(outMatched)} 吨`,
+      ico:'M6 2h9l4 4v16H6z', bg:'var(--amber-soft)', cl:'var(--amber)' },
+    { label:'预估碳减排', val: fmt(co2,1), unit:'tCO₂e',
+      foot:`相当于 ${fmt(co2/22.3,1)} 公顷森林年固碳量`,
+      ico:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z M12 7v5l3 2', bg:'var(--lime-soft)', cl:'#5d9b1f' }
+  ];
+
+  $('#kpi-grid').innerHTML = kpis.map(k=>`
+    <div class="card kpi">
+      <div class="kpi-top">
+        <div class="kpi-ico" style="background:${k.bg}">
+          <svg viewBox="0 0 24 24" style="stroke:${k.cl}">${pathOf(k.ico)}</svg>
+        </div>
+        <div class="kpi-label">${k.label}</div>
+      </div>
+      <div class="kpi-val num">${k.val}${k.unit?`<small>${k.unit}</small>`:''}</div>
+      <div class="kpi-foot">${k.foot}</div>
+    </div>`).join('');
+
+  renderSupplyChart();
+  renderUtilChart();
+  renderGapPanel();
+  renderFeed();
+}
+
+function pathOf(d){
+  // 简化：把 d 按 "M...空间..." 的写法拆成多条 path
+  return d.split(' M').map((seg,i)=>`<path d="${i===0?seg:'M'+seg}"/>`).join('');
+}
+
+function renderSupplyChart(){
+  const rows = WASTE_TYPES.map(t=>{
+    const sup = state.supplies.filter(s=>s.type===t).reduce((a,s)=>a+s.qty,0);
+    const cap = state.processors.filter(p=>p.accepts.includes(t))
+                  .reduce((a,p)=>a+Math.max(0,p.cap-p.load),0);
+    const unsold = state.matches
+      .filter(m=>m.supply.type===t)
+      .reduce((a,m)=>a + m.legs.reduce((x,l)=>x + l.allocs.filter(al=>!al.demand).reduce((y,al)=>y+al.qty,0), 0), 0);
+    return { t, sup, cap, unsold };
+  }).filter(r=>r.sup>0 || r.cap>0 || r.unsold>0)
+    .sort((a,b)=>b.sup-a.sup);
+
+  const max = Math.max(...rows.map(r=>Math.max(r.sup,r.cap,r.unsold)), 1);
+
+  $('#chart-supply').innerHTML = rows.length ? rows.map(r=>`
+    <div class="bar-row">
+      <div class="bar-head">
+        <span class="bar-name"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${WASTE[r.t]?.color||'#999'};margin-right:6px;vertical-align:1px"></span>${r.t}</span>
+        <span class="bar-val num">${fmt(r.sup)} / ${fmt(r.cap)}${r.unsold>1?` <span style="color:var(--amber)">· 待消纳 ${fmt(r.unsold)}</span>`:''}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.max(r.sup/max*100, r.sup>0?1.5:0)}%;background:#8d99ae"></div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.max(r.cap/max*100, r.cap>0?1.5:0)}%;background:linear-gradient(90deg,#12a37e,#3ac49b)"></div>
+      </div>
+    </div>`).join('') : `<div class="empty" style="padding:24px 0">暂无数据</div>`;
+}
+
+function renderUtilChart(){
+  const list = state.processors.map(p=>{
+    const used = state.usedProc[p.id] || 0;
+    const base = p.load;
+    const rate = p.cap>0 ? Math.min(1,(base+used)/p.cap) : 0;
+    return { p, rate, used };
+  }).sort((a,b)=>b.rate-a.rate);
+
+  $('#chart-util').innerHTML = list.map(({p,rate})=>{
+    const c = rate>=0.98 ? 'var(--red)' : rate>0.8 ? 'var(--amber)' : 'var(--green-2)';
+    return `<div class="util-row">
+      <div class="util-name" title="${esc(p.name)}">${esc(p.name)}</div>
+      <div class="util-track"><div class="util-fill" style="width:${Math.max(rate*100,2)}%;background:${c}"></div></div>
+      <div class="util-pct num" style="color:${c}">${pct(rate)}</div>
+    </div>`;
+  }).join('') || `<div class="empty" style="padding:24px 0">暂无加工厂</div>`;
+
+  const capSum = state.processors.reduce((a,p)=>a+p.cap,0);
+  const usedSum = state.processors.reduce((a,p)=>a+p.load+(state.usedProc[p.id]||0),0);
+  if (state.processors.length){
+    $('#chart-util').insertAdjacentHTML('beforeend', `
+      <div style="margin-top:14px;padding-top:11px;border-top:1px solid var(--line-2);display:flex;justify-content:space-between;font-size:12px">
+        <span style="color:var(--muted)">合计产能 <b class="num" style="color:var(--ink-2)">${fmt(capSum)}</b> 吨/月</span>
+        <span style="color:var(--muted)">平均利用率 <b class="num" style="color:var(--ink-2)">${capSum?pct(usedSum/capSum):'—'}</b></span>
+      </div>`);
+  }
+}
+
+function renderGapPanel(){
+  const st = state.matches;
+  if (!st.length){
+    $('#gap-panel').innerHTML = `<div class="empty">
+      <div class="empty-ico"><svg viewBox="0 0 24 24"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg></div>
+      <div class="empty-title">尚未运行撮合</div>
+      <div style="font-size:12px">点击右上角「运行智能撮合」生成链路诊断</div>
+    </div>`;
+    return;
+  }
+  const totalSupply = state.supplies.reduce((a,s)=>a+s.qty,0);
+  const matched = st.reduce((a,m)=>a+m.matchedQty,0);
+  const shortCap = st.filter(m=>m.status!=='closed')
+      .reduce((a,m)=>a+m.left,0);
+  const overCap  = st.reduce((a,m)=>a + m.legs.reduce((x,l)=>x + l.allocs.filter(al=>!al.demand).reduce((y,al)=>y+al.qty,0),0), 0);
+  const unmetQty = (state.unmet||[]).reduce((a,u)=>a+u.need,0);
+
+  const items = [
+    { label:'废物找不到承接方', val: fmt(shortCap), unit:'吨', level: shortCap>0?'red':'ok',
+      note: shortCap>0 ? '区域内该品类加工产能不足，建议引入 / 扩产' : '全部废物均已被承接' },
+    { label:'再生品找不到买家', val: fmt(overCap), unit:'吨', level: overCap>0?'amber':'ok',
+      note: overCap>0 ? '产出物无对应需求，建议开发下游或调整收率' : '产出物全部被需求方吸收' },
+    { label:'需求缺口', val: fmt(unmetQty), unit:'吨', level: unmetQty>0?'amber':'ok',
+      note: unmetQty>0 ? '本地再生料供给不足，建议招商再生料企业' : '所有需求已被满足' }
+  ];
+
+  $('#gap-panel').innerHTML = items.map(it=>`
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed var(--line-2)">
+      <div style="width:8px;height:8px;border-radius:50%;margin-top:7px;flex:0 0 8px;background:${
+        it.level==='ok'?'var(--green-2)':it.level==='amber'?'var(--amber)':'var(--red)'}"></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <span style="font-size:12.8px;font-weight:600;color:var(--ink-2)">${it.label}</span>
+          <span class="num" style="font-size:13px;font-weight:700">${it.val}<small style="font-size:11px;color:var(--muted);font-weight:600"> ${it.unit}</small></span>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">${it.note}</div>
+      </div>
+    </div>`).join('') +
+    `<div style="margin-top:13px;padding:10px 12px;background:var(--green-soft);border-radius:9px;font-size:12px;color:var(--green-deep);line-height:1.6">
+      <b>撮合率 ${pct(totalSupply? matched/totalSupply:0)}</b> · 平均匹配度 ${Math.round(st.reduce((a,m)=>a+m.score,0)/st.length)} 分 ·
+      单月可减少填埋 ${fmt(matched)} 吨
+    </div>`;
+}
+
+function renderFeed(){
+  const items = [];
+  state.matches.forEach(m=>{
+    m.legs.forEach(l=>{
+      items.push({
+        t:'匹配成功',
+        txt:`<b>${esc(m.supply.company)}</b> 的 ${fmt(l.take)} 吨 ${m.supply.type} → <b>${esc(l.processor.name)}</b>`,
+        lv:'green', score:l.score
+      });
+    });
+    if (m.left > 0.5) items.push({
+      t:'产能缺口', lv:'red', score:null,
+      txt:`<b>${esc(m.supply.company)}</b> 仍有 ${fmt(m.left)} 吨 ${m.supply.type} 未匹配到加工厂`
+    });
+  });
+
+  const over = state.matches.reduce((a,m)=>a + m.legs.reduce((x,l)=>
+      x + l.allocs.filter(al=>!al.demand).reduce((y,al)=>y+al.qty,0),0),0);
+  if (over > 0.5) items.push({
+    t:'产出待寻单', lv:'amber', score:null,
+    txt:`再生品合计 <b>${fmt(over)} 吨</b> 暂无下游买家承接`
+  });
+
+  $('#feed-panel').innerHTML = items.length ? items.slice(0,6).map(it=>`
+    <div style="display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed var(--line-2);align-items:flex-start">
+      <span class="tag tag-${it.lv}" style="flex:0 0 auto">${it.t}</span>
+      <div style="flex:1;min-width:0;font-size:12.2px;color:var(--ink-2);line-height:1.5">${it.txt}</div>
+      ${it.score!=null?`<span class="num" style="font-size:12px;font-weight:700;color:var(--green);flex:0 0 auto">${it.score}</span>`:''}
+    </div>`).join('')
+    : `<div class="empty" style="padding:26px 0"><div class="empty-title">暂无动态</div></div>`;
+}
+
+/* =========================================================
+   5. 渲染 · 供给方
+   ========================================================= */
+function renderSupplyView(){
+  const byType = WASTE_TYPES.map(t=>({
+    t, qty: state.supplies.filter(s=>s.type===t).reduce((a,s)=>a+s.qty,0)
+  })).filter(x=>x.qty>0).sort((a,b)=>b.qty-a.qty);
+  const total = byType.reduce((a,b)=>a+b.qty,0) || 1;
+
+  $('#supply-structure').innerHTML = byType.length ? `
+    <div style="display:flex;height:12px;border-radius:7px;overflow:hidden;gap:2px;margin-bottom:14px">
+      ${byType.map(x=>`<div title="${x.t} ${fmt(x.qty)}吨" style="width:${x.qty/total*100}%;background:${WASTE[x.t].color};min-width:3px"></div>`).join('')}
+    </div>
+    ${byType.map(x=>`
+      <div style="display:flex;align-items:center;gap:9px;padding:6px 0;font-size:12.3px">
+        <span style="width:8px;height:8px;border-radius:2px;background:${WASTE[x.t].color};flex:0 0 8px"></span>
+        <span style="flex:1;color:var(--ink-2);font-weight:550">${x.t}</span>
+        <span class="num" style="color:var(--muted)">${fmt(x.qty)} 吨</span>
+        <span class="num" style="font-weight:700;width:38px;text-align:right">${pct(x.qty/total)}</span>
+      </div>`).join('')}
+    <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--line-2);display:flex;justify-content:space-between;font-size:12px">
+      <span style="color:var(--muted)">合计</span>
+      <span class="num" style="font-weight:700">${fmt(total)} 吨/月</span>
+    </div>` : `<div class="empty" style="padding:24px 0">暂无登记</div>`;
+
+  $('#supply-count').textContent = `${state.supplies.length} 条记录`;
+  $('#badge-supply').textContent = state.supplies.length;
+
+  $('#tbody-supply').innerHTML = state.supplies.map(s=>{
+    const cp = state.processors.filter(p=>p.accepts.includes(s.type));
+    const capFree = cp.reduce((a,p)=>a+Math.max(0,p.cap-p.load),0);
+    const m = state.matches.find(x=>x.supply.id===s.id);
+    return `<tr>
+      <td class="td-strong">${esc(s.company)}</td>
+      <td><span class="tag tag-soft"><i style="background:${WASTE[s.type]?.color||'#999'}"></i>${esc(s.type)}</span></td>
+      <td class="num td-strong">${fmt(s.qty)} 吨</td>
+      <td class="num">${s.price?`¥${fmt(s.price)}`:'<span class="td-mute">面议</span>'}</td>
+      <td class="td-mute">${esc(s.city||'—')}</td>
+      <td>${cp.length
+          ? `<span class="tag ${capFree>=s.qty?'tag-green':'tag-amber'}">${cp.length} 家 · 余量 ${fmt(capFree)}吨</span>`
+          : `<span class="tag tag-red">无承接方</span>`}</td>
+      <td style="text-align:right">
+        <button class="btn btn-ghost btn-sm" onclick="delSupply('${s.id}')">移除</button>
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="7" class="td-mute" style="text-align:center;padding:28px">暂无数据</td></tr>`;
+}
+
+/* =========================================================
+   6. 渲染 · 加工厂
+   ========================================================= */
+function renderProcView(){
+  const byType = WASTE_TYPES.map(t=>({
+    t,
+    free: state.processors.filter(p=>p.accepts.includes(t)).reduce((a,p)=>a+Math.max(0,p.cap-p.load),0),
+    cap:  state.processors.filter(p=>p.accepts.includes(t)).reduce((a,p)=>a+p.cap,0)
+  })).filter(x=>x.cap>0).sort((a,b)=>b.free-a.free);
+  const totalFree = byType.reduce((a,b)=>a+b.free,0) || 1;
+
+  $('#proc-structure').innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:12px">
+      <span class="num" style="font-size:26px;font-weight:700;letter-spacing:-.5px">${fmt(totalFree)}</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:600">吨/月 可用余量</span>
+    </div>
+    ${byType.map(x=>`
+      <div style="padding:7px 0">
+        <div style="display:flex;justify-content:space-between;font-size:12.2px;margin-bottom:4px">
+          <span style="color:var(--ink-2);font-weight:550">${x.t}</span>
+          <span class="num" style="color:var(--muted)">${fmt(x.free)} / ${fmt(x.cap)}</span>
+        </div>
+        <div style="height:6px;border-radius:4px;background:#f0f5f2;overflow:hidden">
+          <div style="width:${x.free/x.cap*100}%;height:100%;border-radius:4px;background:linear-gradient(90deg,#12a37e,#4ecfa8)"></div>
+        </div>
+      </div>`).join('') || `<div class="empty" style="padding:20px 0">暂无</div>`}`;
+
+  $('#badge-proc').textContent = state.processors.length;
+
+  $('#proc-cards').innerHTML = state.processors.map(p=>{
+    const free = Math.max(0, p.cap - p.load);
+    const used = Math.min(state.usedProc[p.id] || 0, free);
+    const totalRate = p.cap ? Math.min(1, (p.load + used) / p.cap) : 0;
+    const loadW = p.cap ? Math.min(100, p.load/p.cap*100) : 0;
+    const usedW = p.cap ? Math.min(100 - loadW, used/p.cap*100) : 0;
+    const c = totalRate>=0.98?'var(--red)':totalRate>0.8?'var(--amber)':'var(--green-2)';
+    return `<div class="card" style="padding:14px 16px">
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:9px">
+        <div style="min-width:0">
+          <div style="font-size:13.2px;font-weight:650;margin-bottom:3px">${esc(p.name)}</div>
+          <div style="font-size:11.5px;color:var(--muted)">${esc(p.city||'—')} · 评分 <span class="num" style="color:var(--amber);font-weight:700">${p.rating||'—'}</span></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="delProc('${p.id}')">移除</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+        ${p.accepts.map(t=>`<span class="tag tag-soft"><i style="background:${WASTE[t]?.color||'#999'}"></i>${t}</span>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="flex:1;height:7px;border-radius:5px;background:#f0f5f2;overflow:hidden;display:flex">
+          <div style="width:${loadW}%;background:#a9bdb4"></div>
+          <div style="width:${usedW}%;background:${c}"></div>
+        </div>
+        <span class="num" style="font-size:11.5px;font-weight:650;color:${c};flex:0 0 auto">${pct(totalRate)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:9px">
+        <span>已占用 <b class="num" style="color:var(--ink-2)">${fmt(p.load)}</b> + 撮合吃进 <b class="num" style="color:var(--ink-2)">${fmt(used)}</b></span>
+        <span>余 <b class="num" style="color:var(--green)">${fmt(Math.max(0,free-used))}</b> / 能力 <b class="num" style="color:var(--ink-2)">${fmt(p.cap)}</b></span>
+      </div>
+      <div style="border-top:1px dashed var(--line-2);padding-top:9px">
+        <div style="font-size:10.5px;color:var(--muted);font-weight:650;letter-spacing:.4px;margin-bottom:5px">产出物 · 收率</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${p.outputs.map(o=>`<span class="tag tag-amber">${esc(o.type)} <b class="num">${(o.ratio*100).toFixed(0)}%</b></span>`).join('') || '<span class="td-mute">未设置</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('') || `<div class="card"><div class="empty"><div class="empty-title">暂无加工厂</div></div></div>`;
+}
+
+/* =========================================================
+   7. 渲染 · 需求方
+   ========================================================= */
+function renderDemandView(){
+  const total = state.demands.reduce((a,d)=>a+d.qty,0) || 1;
+  const rows = state.demands.map(d=>{
+    const got = state.usedDem[d.id] || 0;
+    return { d, got, rate: Math.min(1, got/d.qty) };
+  }).sort((a,b)=>a.rate-b.rate);
+
+  const satisfied = rows.reduce((a,r)=>a+r.got,0);
+
+  $('#demand-structure').innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
+      <span class="num" style="font-size:26px;font-weight:700;letter-spacing:-.5px">${pct(satisfied/total)}</span>
+      <span style="font-size:12px;color:var(--muted);font-weight:600">整体满足率</span>
+    </div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:13px">
+      已满足 <b class="num" style="color:var(--green)">${fmt(satisfied)}</b> 吨 / 总需求 <b class="num">${fmt(total)}</b> 吨
+    </div>
+    ${rows.slice(0,8).map(r=>`
+      <div style="padding:6px 0">
+        <div style="display:flex;justify-content:space-between;font-size:12.2px;margin-bottom:4px;gap:8px">
+          <span style="color:var(--ink-2);font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.d.type)}</span>
+          <span class="num" style="color:${r.rate>=0.99?'var(--green)':r.rate>0?'var(--amber)':'var(--red)'};font-weight:650;flex:0 0 auto">${pct(r.rate)}</span>
+        </div>
+        <div style="height:5px;border-radius:4px;background:#f0f5f2;overflow:hidden">
+          <div style="width:${Math.max(r.rate*100,1)}%;height:100%;border-radius:4px;background:${r.rate>=0.99?'var(--green-2)':r.rate>0?'var(--amber)':'var(--red)'}"></div>
+        </div>
+      </div>`).join('')}`;
+
+  $('#demand-count').textContent = `${state.demands.length} 条记录`;
+  $('#badge-demand').textContent = state.demands.length;
+
+  $('#tbody-demand').innerHTML = rows.map(({d,got,rate})=>`
+    <tr>
+      <td class="td-strong">${esc(d.company)}</td>
+      <td><span class="tag tag-blue">${esc(d.type)}</span></td>
+      <td class="num td-strong">${fmt(d.qty)} 吨</td>
+      <td class="num">${d.price?`¥${fmt(d.price)}`:'<span class="td-mute">面议</span>'}</td>
+      <td class="td-mute">${esc(d.city||'—')}</td>
+      <td>
+        <span class="tag ${rate>=0.99?'tag-green':rate>0?'tag-amber':'tag-red'}">${pct(rate)}</span>
+        <span class="td-mute num" style="margin-left:6px">${fmt(got)}吨</span>
+      </td>
+      <td style="text-align:right"><button class="btn btn-ghost btn-sm" onclick="delDemand('${d.id}')">移除</button></td>
+    </tr>`).join('') || `<tr><td colspan="7" class="td-mute" style="text-align:center;padding:28px">暂无数据</td></tr>`;
+}
+
+/* =========================================================
+   8. 渲染 · 撮合结果
+   ========================================================= */
+function renderMatchView(){
+  const st = state.matches;
+  $('#badge-match').textContent = st.length;
+
+  const totalSupply = state.supplies.reduce((a,s)=>a+s.qty,0);
+  const matchedQty  = st.reduce((a,m)=>a+m.matchedQty,0);
+  const outTotal    = st.reduce((a,m)=>a+m.totalOut,0);
+  const outMatched  = st.reduce((a,m)=>a+m.totalOutMatched,0);
+  const totalDemand = state.demands.reduce((a,d)=>a+d.qty,0) || 1;
+  const closed      = st.filter(m=>m.status==='closed').length;
+  const partial     = st.filter(m=>m.status==='partial').length;
+
+  $('#match-time').textContent = state.lastRun
+    ? '上次运行：' + state.lastRun.toLocaleString('zh-CN',{hour12:false}).replace(/\//g,'-')
+    : '尚未运行';
+
+  $('#match-summary').innerHTML = `
+    <div class="flow-box">
+      <div class="fb-label">废物入池</div>
+      <div class="fb-val num">${fmt(totalSupply)}<small>吨/月</small></div>
+      <div class="fb-sub">${state.supplies.length} 家供给方</div>
+    </div>
+    <div class="flow-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+    <div class="flow-box" style="border-color:#bfe6d8;background:linear-gradient(180deg,#f2fcf8,#fff)">
+      <div class="fb-label" style="color:var(--green)">撮合消纳</div>
+      <div class="fb-val num" style="color:var(--green-deep)">${fmt(matchedQty)}<small>吨/月</small></div>
+      <div class="fb-sub">撮合率 ${pct(totalSupply?matchedQty/totalSupply:0)}</div>
+    </div>
+    <div class="flow-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+    <div class="flow-box" style="border-color:#f2e0bb;background:linear-gradient(180deg,#fffcf5,#fff)">
+      <div class="fb-label" style="color:var(--amber)">再生品产出</div>
+      <div class="fb-val num">${fmt(outTotal,1)}<small>吨/月</small></div>
+      <div class="fb-sub">已被吸收 ${fmt(outMatched,1)} 吨</div>
+    </div>
+    <div class="flow-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+    <div class="flow-box" style="border-color:#c9ddf5;background:linear-gradient(180deg,#f7fbff,#fff)">
+      <div class="fb-label" style="color:var(--blue)">需求满足</div>
+      <div class="fb-val num" style="color:#2a63a8">${pct(outMatched/totalDemand)}</div>
+      <div class="fb-sub">需求总量 ${fmt(totalDemand)} 吨</div>
+    </div>`;
+
+  const list = st.filter(m=>m.score >= state.threshold);
+  $('#chip-total').textContent = `共 ${list.length} 条链路`;
+  $('#chip-ok').textContent = `已闭环 ${closed}`;
+  $('#chip-part').textContent = `部分匹配 ${partial}`;
+
+  if (!list.length){
+    $('#match-list').innerHTML = `<div class="empty">
+      <div class="empty-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div>
+      <div class="empty-title">没有符合阈值的撮合链路</div>
+      <div style="font-size:12px">试着降低匹配度阈值，或补充加工厂 / 需求登记</div>
+    </div>`;
+    return;
+  }
+
+  $('#match-list').innerHTML = list.map(m=>{
+    const s = m.supply;
+    const C = 113.1;
+    const dash = m.score/100*C;
+    const ringColor = m.score>=80?'var(--green-2)':m.score>=60?'var(--amber)':'var(--red)';
+    const statusTag = m.status==='closed'
+      ? '<span class="tag tag-green">链路闭环</span>'
+      : m.status==='partial'
+        ? `<span class="tag tag-amber">部分匹配 ${pct(m.matchedQty/s.qty)}</span>`
+        : '<span class="tag tag-red">匹配失败</span>';
+
+    const legs = m.legs.map(l=>{
+      const byDem = {};
+      l.allocs.filter(a=>a.demand).forEach(a=>{
+        const k = a.demand.id;
+        if(!byDem[k]) byDem[k] = { d:a.demand, items:[] };
+        byDem[k].items.push(a);
+      });
+      const demKeys = Object.keys(byDem);
+      const lostOut = l.allocs.filter(a=>!a.demand).reduce((x,a)=>x+a.qty,0);
+
+      return `
+      <div class="chain">
+        <div class="chain-node supply">
+          <div class="chain-tag">供给方</div>
+          <div class="chain-name">${esc(s.company)}</div>
+          <div class="chain-meta">${esc(s.type)} · <b>${fmt(l.take)}</b> 吨<br>${esc(s.city||'—')}</div>
+        </div>
+        <div class="chain-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="chain-node proc">
+          <div class="chain-tag">加工厂</div>
+          <div class="chain-name">${esc(l.processor.name)}</div>
+          <div class="chain-meta">处理 <b>${fmt(l.take)}</b> 吨 · 余量 <b>${fmt(Math.max(0,l.processor.cap-l.processor.load-l.take))}</b> 吨<br>匹配度 <b style="color:${l.score>=80?'var(--green)':l.score>=60?'var(--amber)':'var(--red)'}">${l.score}</b></div>
+        </div>
+        <div class="chain-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="chain-node out">
+          <div class="chain-tag">再生品</div>
+          ${l.outputs.map(o=>`<div class="chain-meta" style="margin-bottom:2px"><b>${esc(o.type)}</b> ${fmt(o.qty,1)} 吨</div>`).join('')}
+          ${lostOut>0.5?`<div class="chain-meta" style="color:var(--amber)">其中 ${fmt(lostOut,1)} 吨待寻单</div>`:''}
+        </div>
+        <div class="chain-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+        <div class="chain-node dem">
+          <div class="chain-tag">需求方</div>
+          ${demKeys.length
+            ? demKeys.map(k=>{
+                const g = byDem[k];
+                return `<div class="chain-name" style="font-size:12px">${esc(g.d.company)}</div>
+                  <div class="chain-meta" style="margin-bottom:5px">${g.items.map(it=>`${esc(it.product)} <b>${fmt(it.qty,1)}</b> 吨`).join(' · ')}</div>`;
+              }).join('')
+            : `<div class="chain-meta" style="color:var(--red)">暂无买家<br>产出物需另寻下游</div>`}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="match-card">
+      <div class="match-head">
+        <svg class="ring" viewBox="0 0 44 44">
+          <circle cx="22" cy="22" r="18" fill="none" stroke="#e9f1ee" stroke-width="4"/>
+          <circle cx="22" cy="22" r="18" fill="none" stroke="${ringColor}" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${(C-dash).toFixed(1)}"
+            transform="rotate(-90 22 22)"/>
+          <text x="22" y="26.5" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0f231d">${m.score}</text>
+        </svg>
+        <div class="match-head-main">
+          <div class="match-head-title">
+            ${esc(s.company)} · ${esc(s.type)} ${fmt(s.qty)} 吨
+            ${statusTag}
+          </div>
+          <div class="match-head-sub">
+            ${m.legs.length} 家加工厂承接 · 产出 ${fmt(m.totalOut,1)} 吨 · 被吸收 ${fmt(m.totalOutMatched,1)} 吨 ·
+            减碳 ${fmt(m.co2,1)} tCO₂e
+          </div>
+        </div>
+      </div>
+      ${legs}
+      <div class="match-foot">
+        <span>交易额预估 <b class="num">¥${fmt(m.legs.reduce((a,l)=>a+l.value,0))}</b></span>
+        <span>未消纳废物 <b class="num" style="color:${m.left>0.5?'var(--red)':'var(--green)'}">${fmt(m.left)} 吨</b></span>
+        <span>碳减排 <b class="num">${fmt(m.co2,1)} tCO₂e</b></span>
+        <span style="margin-left:auto;color:var(--muted)">${new Date().toLocaleTimeString('zh-CN',{hour12:false})}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* =========================================================
+   9. 表单 / 交互
+   ========================================================= */
+let outRowSeq = 0;
+function addOutRow(name='', ratio=''){
+  outRowSeq++;
+  const id = 'out'+outRowSeq;
+  const div = document.createElement('div');
+  div.className = 'out-row';
+  div.id = id;
+  div.innerHTML = `
+    <input class="o-name" placeholder="产出物名称，如：再生纸浆" value="${esc(name)}">
+    <input class="o-ratio" type="number" min="0" max="1" step="0.01" placeholder="收率 0.82" value="${esc(ratio)}">
+    <button type="button" class="del" onclick="document.getElementById('${id}').remove()">×</button>`;
+  $('#outs-box').appendChild(div);
+}
+
+function buildStaticOptions(){
+  $('#sel-supply-type').innerHTML = WASTE_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');
+
+  $('#chk-accepts').innerHTML = WASTE_TYPES.map(t=>
+    `<label class="chk" data-type="${t}"><input type="checkbox" value="${t}">${t}</label>`).join('');
+  $$('#chk-accepts .chk').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.preventDefault();
+      const inp = el.querySelector('input');
+      inp.checked = !inp.checked;
+      el.classList.toggle('on', inp.checked);
+    });
+  });
+
+  const products = new Set();
+  state.processors.forEach(p=>p.outputs.forEach(o=>products.add(o.type)));
+  $('#product-list').innerHTML = Array.from(products).map(p=>`<option value="${p}">`).join('');
+}
+
+const VIEW_META = {
+  overview:['平台总览','工业废物资源化撮合 · 供给 / 加工 / 需求 三端联动'],
+  match:['智能撮合','按「品类 → 产能 → 收率 → 需求」四层约束求解最优链条'],
+  supply:['供给方 · 废物登记','登记工业废物的品类、产生量与期望处置价'],
+  proc:['加工厂 · 处理能力','登记可接收品类、产能余量与再生品收率'],
+  demand:['需求方 · 产品需求','登记对再生材料的需求量、品类与可接受价格']
+};
+
+function switchView(v){
+  if (!document.getElementById('view-'+v)) return;
+  $$('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view === v));
+  $$('.view').forEach(s=>s.classList.toggle('active', s.id === 'view-'+v));
+  const meta = VIEW_META[v] || VIEW_META.overview;
+  $('#page-title').textContent = meta[0];
+  $('#page-crumb').textContent = meta[1];
+  if (v === 'match') renderMatchView();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function bindNav(){
+  $$('.nav-item').forEach(btn=>{
+    btn.addEventListener('click', ()=> switchView(btn.dataset.view));
+  });
+}
+
+function bindForms(){
+  // 供给方
+  $('#form-supply').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    state.supplies.push({
+      id:'S'+(++seq), company:f.get('company').trim(), type:f.get('type'),
+      qty:+f.get('qty'), price:+(f.get('price')||0), city:(f.get('city')||'南昌').trim()
+    });
+    e.target.reset();
+    toast('供给登记成功，已加入撮合池');
+    runMatch(true);
+  });
+
+  // 加工厂
+  $('#form-proc').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const accepts = $$('#chk-accepts input:checked').map(i=>i.value);
+    if (!accepts.length){ toast('请至少选择一种可接收废物类型','err'); return; }
+    const outputs = $$('#outs-box .out-row').map(r=>({
+      type: r.querySelector('.o-name').value.trim(),
+      ratio: parseFloat(r.querySelector('.o-ratio').value)
+    })).filter(o=>o.type && !isNaN(o.ratio) && o.ratio>0);
+    if (!outputs.length){ toast('请至少填写一项产出物与收率','err'); return; }
+    const cap = +f.get('cap'), load = +(f.get('load')||0);
+    state.processors.push({
+      id:'P'+(++seq), name:f.get('name').trim(), city:(f.get('city')||'南昌').trim(),
+      rating:4.5, accepts, cap, load: Math.min(load,cap), outputs
+    });
+    e.target.reset();
+    $$('#chk-accepts .chk').forEach(el=>{ el.classList.remove('on'); el.querySelector('input').checked=false; });
+    $('#outs-box').innerHTML=''; addOutRow(); addOutRow();
+    buildStaticOptions();
+    toast('加工能力登记成功');
+    runMatch(true);
+  });
+
+  // 需求方
+  $('#form-demand').addEventListener('submit', e=>{
+    e.preventDefault();
+    const f = new FormData(e.target);
+    state.demands.push({
+      id:'D'+(++seq), company:f.get('company').trim(), type:f.get('type').trim(),
+      qty:+f.get('qty'), price:+(f.get('price')||0), city:(f.get('city')||'南昌').trim()
+    });
+    e.target.reset();
+    buildStaticOptions();
+    toast('产品需求登记成功');
+    runMatch(true);
+  });
+
+  $('#btn-add-out').addEventListener('click', ()=>addOutRow());
+}
+
+function bindActions(){
+  $('#btn-run').addEventListener('click', ()=>runMatch(false));
+
+  $('#btn-reset').addEventListener('click', ()=>{
+    if (!confirm('将清空所有新增登记，恢复初始演示数据，确定吗？')) return;
+    state.supplies = clone(SEED.supplies);
+    state.processors = clone(SEED.processors);
+    state.demands = clone(SEED.demands);
+    $('#outs-box').innerHTML=''; addOutRow(); addOutRow();
+    $$('#chk-accepts .chk').forEach(el=>{ el.classList.remove('on'); el.querySelector('input').checked=false; });
+    buildStaticOptions();
+    runMatch(true);
+    toast('已恢复初始演示数据');
+  });
+
+  $('#score-range').addEventListener('input', e=>{
+    state.threshold = +e.target.value;
+    $('#score-val').textContent = state.threshold;
+    renderMatchView();
+  });
+
+  $('#btn-export').addEventListener('click', exportPlan);
+
+  $$('.nav-item').forEach(b=>{
+    if (b.dataset.view === 'match') b.addEventListener('click', ()=>renderMatchView());
+  });
+}
+
+function runMatch(silent){
+  const go = ()=>{
+    computeMatches();
+    renderOverview(); renderSupplyView(); renderProcView(); renderDemandView(); renderMatchView();
+    if (!silent) toast(`撮合完成：生成 ${state.matches.length} 条链路`);
+  };
+  if (silent) { go(); return; }
+  $('#loading').classList.add('show');
+  $('#loading-txt').textContent = '正在求解最优撮合链路…';
+  setTimeout(()=>{
+    $('#loading').classList.remove('show');
+    go();
+  }, 620);
+}
+
+function delSupply(id){
+  state.supplies = state.supplies.filter(s=>s.id!==id);
+  runMatch(true); toast('已移除该供给记录');
+}
+function delProc(id){
+  state.processors = state.processors.filter(p=>p.id!==id);
+  runMatch(true); toast('已移除该加工厂');
+  buildStaticOptions();
+}
+function delDemand(id){
+  state.demands = state.demands.filter(d=>d.id!==id);
+  runMatch(true); toast('已移除该需求记录');
+}
+
+function exportPlan(){
+  if (!state.matches.length){ toast('请先运行撮合','err'); return; }
+  const rows = [['供给方','废物类型','废物量(吨)','加工厂','承接量(吨)','再生品','产出量(吨)','需求方','消纳量(吨)','单价(元/吨)','匹配度']];
+  state.matches.forEach(m=>{
+    m.legs.forEach(l=>{
+      const allocs = l.allocs.length ? l.allocs : [{demand:null, product:'—', qty:0, price:null}];
+      allocs.forEach(a=>{
+        rows.push([
+          m.supply.company, m.supply.type, m.supply.qty, l.processor.name, l.take.toFixed(1),
+          a.product, a.qty.toFixed(2), a.demand ? a.demand.company : '未匹配',
+          a.demand ? a.qty.toFixed(2) : '0',
+          a.price || '', l.score
+        ]);
+      });
+    });
+  });
+  const csv = '\ufeff' + rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '循链撮合方案_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+  toast('撮合方案已导出 CSV');
+}
+
+/* =========================================================
+   10. 启动
+   ========================================================= */
+function init(){
+  state.supplies = clone(SEED.supplies);
+  state.processors = clone(SEED.processors);
+  state.demands = clone(SEED.demands);
+
+  buildStaticOptions();
+  addOutRow('再生纸浆', '0.82');
+  addOutRow('纸板', '0.10');
+
+  bindNav();
+  bindForms();
+  bindActions();
+
+  runMatch(true);
+
+  const qv = new URLSearchParams(location.search).get('view');
+  if (qv) switchView(qv);
+}
+
+init();
+</script>
+</body>
+</html>
