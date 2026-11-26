@@ -221,7 +221,7 @@ const PROVINCE_REGION = { '广东':'华南', '山东':'华东', ... };
 
 ### 自测
 
-`test/` 下有两个基于 `playwright-core` 的脚本（复用系统已装的 Edge，无需下载浏览器）：
+`test/` 下有三个基于 `playwright-core` 的脚本（复用系统已装的 Edge，无需下载浏览器）：
 
 ```bash
 npm i playwright-core --no-save
@@ -273,20 +273,100 @@ looplink-demo/
 ├── supply.html          供给方 · 废物登记
 ├── proc.html            加工厂 · 处理能力
 ├── demand.html          需求方 · 产品需求
+├── favicon.ico          浏览器标签图标（内嵌 16/32/48）
+├── favicon.svg          矢量标签图标
+├── favicon-16/32/48.png 定尺寸标签图标
+├── apple-touch-icon.png iOS 主屏图标（180，全出血）
+├── icon-192/512.png     PWA 图标
+├── icon-maskable-512.png PWA 自适应图标（图形收在 80% 安全区内）
+├── site.webmanifest     PWA 清单
 ├── assets/
 │   ├── app.css          公共样式（含响应式断点）
-│   └── app.js           数据 + 撮合引擎 + 渲染 + 多页外壳与持久化
+│   ├── app.js           数据 + 撮合引擎 + 渲染 + 多页外壳与持久化
+│   └── brand/           图标源文件、生成器与预览页（详见「站点图标」）
 ├── legacy/
 │   └── index.spa.html   旧版单文件 SPA（视图内切换 + ?view= 深链），可独立运行
 ├── test/
 │   ├── e2e.cjs          e2e 冒烟脚本（56 项）
 │   ├── mobile.cjs       移动端视口检查
 │   ├── shots.cjs        各页截图生成
-│   └── shots/           生成的截图
+│   └── shots/           生成的截图（.png 不入库，见 .gitignore）
 └── README.md            本文件
 ```
 
 每个 HTML 页面只有「head + 空的 `.app` 骨架 + 属于自己的那一个 `<section>` + 脚本引用」，公共的侧栏 / 顶栏 / 导航由 JS 注入。
+
+---
+
+## 站点图标
+
+### 图形
+
+**两个互扣的圆环**。扣在一起的两环对应「循链」，也对应平台在做的事——把供需两端扣上；两环交叠的形状本身也是「撮合」的图示。
+
+配色是品牌绿渐变 `#16bd93 → #0f8b6c → #0a6b53`，同一个梯度三处共用：
+
+| 用在哪 | 载体 |
+|---|---|
+| 站点图标（favicon / iOS / PWA） | `assets/brand/build-icons.cjs` 里的 `A1/A2/A3` |
+| 侧栏品牌底板 `.brand-mark` | `assets/app.css` |
+| 侧栏里的白色圆环 | `assets/app.js` 内联 SVG（源文件 `assets/brand/looplink-mark-mono.svg`） |
+
+改配色只改这三处，站内标识和浏览器标签就会同步。
+
+### 文件清单
+
+| 文件 | 用途 |
+|---|---|
+| `favicon.ico` | 标签图标，内嵌 16 / 32 / 48 三档，老浏览器兜底 |
+| `favicon.svg` | 矢量标签图标（支持 SVG 图标的浏览器优先用它） |
+| `favicon-16.png` `favicon-32.png` | 定尺寸标签图标 |
+| `favicon-48.png` | Windows 桌面快捷方式 / 部分书签栏 |
+| `apple-touch-icon.png` | iOS 添加到主屏（180，全出血） |
+| `icon-192.png` `icon-512.png` | PWA 图标 |
+| `icon-maskable-512.png` | PWA 自适应图标（Android 遮罩用） |
+| `site.webmanifest` | PWA 清单：名称、主题色、图标声明 |
+| `assets/brand/looplink-mark.svg` | 源：带底板的精致版（≥48px） |
+| `assets/brand/looplink-mark-small.svg` | 源：带底板的加粗版（16 / 32px） |
+| `assets/brand/looplink-mark-flat.svg` | 源：无圆角全出血版（iOS / 遮罩复用） |
+| `assets/brand/looplink-mark-mono.svg` | 源：白色单色标，用于渐变底板之上 |
+| `assets/brand/icon-preview.html` | 预览页：标签栏明暗底色、各尺寸实物、遮罩安全区 |
+| `assets/brand/build-icons.cjs` | 生成器：源 SVG → 根目录全部图标 + manifest |
+
+### 三档几何，不是一个图标缩三次
+
+同一个图形在小尺寸和大尺寸下要的东西不一样，所以按像素分了档（源见 `build-icons.cjs` 的 `GEOM`；坐标都在 512 栅格上）：
+
+| 档位 | 几何 | 用在 | 为什么 |
+|---|---|---|---|
+| `bold` 加粗版 | `r:96 sw:54`，**无**交叉断口 | `favicon.svg`、16 / 32 px PNG、`.ico` 的 16 / 32 | 16px 下只占 3px 半径、1.7px 描边，细描边会糊成色块；断口也会让环看着「破」了 |
+| `fine` 精致版 | `r:92 sw:42`，**带**「上压下」断口 | `favicon-48`、`icon-192`、`icon-512`、`.ico` 的 48 | 看得清细节了，断口让两环真正「扣」起来，而不是叠在一起 |
+| `flat + 安全区` | 全出血 + 图形缩到中心 80% | `apple-touch-icon`、`icon-maskable-512` | 见下 |
+
+断口的做法是给左下环套一层 mask，mask 里用**加宽 1.6 倍**的右环描边挖洞——比手算交点省事，也不会在交叉处留下接缝。
+
+### 两个平台规则
+
+- **iOS 自己裁圆角**，所以给它**无圆角、全出血**的方图（`looplink-mark-flat.svg`）。如果给它一张自己已经带圆角的图，iOS 会在圆角外面再切一层，出现白边或缺口。
+- **Android 自适应图标会被厂商遮罩裁成各种形状**（圆形、圆角方、水滴…），所以图形必须收在中心 80% 安全区内，否则贴边内容会被切掉。这一档的图形是等比缩到 74% 再居中。
+
+顺带说明：**带底板图标的圆角取 22.7%**（512 → `rx:116`），这是 iOS 应用图标的惯例比例；**侧栏那块 36px 底板沿用站内的 11px 圆角**（约 30%），是为了跟导航项（10px）、卡片（14px）凑成一套 UI 圆角语言，不跟图标硬对齐。
+
+### 改图标
+
+源文件就是 `assets/brand/` 下的四个 SVG，改完重新出图：
+
+```bash
+npm i @resvg/resvg-js --no-save   # 只用到 SVG→PNG 渲染，不进依赖清单
+node assets/brand/build-icons.cjs
+```
+
+脚本会把根目录的 `favicon*` / `icon-*` / `apple-touch-icon.png` / `site.webmanifest` 全部重写一遍（`site.webmanifest` 也由脚本生成，别手改）。侧栏那个内联 SVG 在 `assets/app.js` 的 `buildShell()` 里，几何与 `bold` 档同源——24 栅格下的 `r:4.5 sw:2.531 cx:8.25/15.75`，正是 512 栅格 `÷ 24 × 512 = 21.333` 换算过来的，改完记得两边一起改。
+
+不用命令行也行：`assets/brand/icon-preview.html` 是预览页，双击打开就能看标签栏明暗两种底色下的真实 16px 效果、各尺寸实物、以及遮罩安全区示意。
+
+> 注：`legacy/index.spa.html` 是封存的旧版快照，它的品牌标**有意保持原样**（便于对比），只有 `<head>` 里的图标引用跟着更新了。
+
 
 ---
 
