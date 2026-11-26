@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 站点图标集预览</title>
+<link rel="icon" href="../../favicon.ico" sizes="32x32">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<style>
+:root{--green:#0f8b6c;--green-2:#12a37e;--green-deep:#0a6b53;--ink:#0f231d;--ink-2:#3f574e;
+  --muted:#7e918a;--line:#e3ebe7;--bg:#f3f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6;padding:34px 30px 70px}
+.wrap{max-width:1000px;margin:0 auto}
+h1{font-size:21px;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:11px}
+h1 img{width:34px;height:34px;border-radius:10px;box-shadow:0 8px 18px -9px rgba(15,139,108,.8)}
+.sub{color:var(--muted);font-size:12.5px;margin:6px 0 26px}
+h2{font-size:13px;font-weight:650;letter-spacing:.3px;margin:26px 0 10px;color:var(--ink-2)}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  box-shadow:0 1px 2px rgba(15,35,29,.04),0 10px 28px -20px rgba(15,35,29,.2)}
+/* 浏览器标签栏模拟 */
+.tabs{display:flex;gap:8px;align-items:flex-end;padding:10px 10px 0;border-radius:12px 12px 0 0}
+.tabs.light{background:#fff;border:1px solid var(--line);border-bottom:none}
+.tabs.dark{background:#202826;border:1px solid #38423f;border-bottom:none}
+.tab{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:9px 9px 0 0;font-size:12.5px;white-space:nowrap}
+.tabs.light .tab.on{background:#f5f8f7;color:#2f443c;font-weight:600}
+.tabs.light .tab{color:#8b9a95}
+.tabs.dark .tab.on{background:#2e3835;color:#e3e9e6;font-weight:600}
+.tabs.dark .tab{color:#93a29d}
+.tab img{width:16px;height:16px;display:block}
+.bar{height:34px;border-radius:0 0 12px 12px}
+.tabs.light .bar{background:#fff;border:1px solid var(--line);border-top:1px solid #eef4f1}
+.tabs.dark .bar{background:#202826;border:1px solid #38423f;border-top:1px solid #2b3431}
+.row{display:flex;align-items:flex-end;gap:30px;flex-wrap:wrap}
+.asset{text-align:center}
+.asset .ph{display:grid;place-items:center;height:200px}
+.asset .cap{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.asset .cap b{display:block;color:var(--ink-2);font-size:11.5px;font-weight:600}
+.px{background-image:linear-gradient(45deg,#e8eae8 25%,transparent 25%,transparent 75%,#e8eae8 75%),
+  linear-gradient(45deg,#e8eae8 25%,transparent 25%,transparent 75%,#e8eae8 75%);
+  background-size:8px 8px;background-position:0 0,4px 4px;border-radius:10px}
+.safe{position:relative;display:inline-block}
+.safe::after{content:"";position:absolute;inset:10%;border:1.5px dashed rgba(255,255,255,.85);border-radius:50%}
+.safe::before{content:"安全区";position:absolute;left:50%;bottom:-2px;transform:translate(-50%,100%);
+  font-size:11px;color:var(--muted)}
+.ios{background:linear-gradient(160deg,#dfe9e4,#c9d8d2);border-radius:12px;padding:22px;display:inline-grid;place-items:center}
+.ios img{width:88px;height:88px;border-radius:20px;box-shadow:0 10px 22px -12px rgba(15,35,29,.6)}
+.ios .lbl{font-size:11px;color:#3f574e;margin-top:9px;font-weight:600}
+pre{background:#0f231d;color:#dbe7e2;border-radius:11px;padding:14px 16px;overflow:auto;font-size:12px;line-height:1.75}
+pre .t{color:#7bc043}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+.note code{background:#eef4f1;border-radius:5px;padding:1px 5px;color:var(--ink-2)}
+.cap{font-size:11px;color:var(--muted)}
+/* 侧栏品牌标：与 assets/app.css 中的定义保持一致 */
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:36px;height:36px;border-radius:11px;flex:0 0 36px;
+  background:linear-gradient(135deg,#16bd93 0%,#0f8b6c 55%,#0a6b53 100%);display:grid;place-items:center;
+  box-shadow:0 8px 18px -8px rgba(15,139,108,.75)}
+.brand-mark svg{width:20px;height:20px}
+.brand-name{font-weight:700;font-size:15.5px;letter-spacing:.2px;line-height:1.2}
+.brand-sub{font-size:10.5px;color:var(--muted);letter-spacing:.9px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><img src="../../favicon-32.png" alt="">循链 LoopLink · 站点图标集</h1>
+  <p class="sub">互扣双环 —— 呼应「循链」与供需撮合；配色沿用侧栏品牌标的绿色渐变 #16bd93 → #0a6b53。</p>
+
+  <h2>浏览器标签栏实际效果（16px 真实尺寸）</h2>
+  <div class="tabs light">
+    <div class="tab on"><img src="../../favicon-16.png" alt="">循链 LoopLink · 平台总览</div>
+    <div class="tab"><img src="../../favicon-16.png" alt="">循链 LoopLink · 智能撮合</div>
+    <div class="tab" style="opacity:.7">新标签页</div>
+  </div>
+  <div class="bar"></div>
+  <div style="height:14px"></div>
+  <div class="tabs dark">
+    <div class="tab on"><img src="../../favicon-16.png" alt="">循链 LoopLink · 平台总览</div>
+    <div class="tab"><img src="../../favicon-16.png" alt="">循链 LoopLink · 区域联动</div>
+    <div class="tab" style="opacity:.7">新标签页</div>
+  </div>
+  <div class="bar"></div>
+
+  <h2>各尺寸实物（未放大）</h2>
+  <div class="card">
+    <div class="row">
+      <div class="asset"><div class="ph"><img class="px" src="../../favicon-16.png" width="16" height="16" alt=""></div><div class="cap"><b>favicon-16</b>16×16</div></div>
+      <div class="asset"><div class="ph"><img class="px" src="../../favicon-32.png" width="32" height="32" alt=""></div><div class="cap"><b>favicon-32</b>32×32</div></div>
+      <div class="asset"><div class="ph"><img class="px" src="../../favicon-48.png" width="48" height="48" alt=""></div><div class="cap"><b>favicon-48</b>48×48</div></div>
+      <div class="asset"><div class="ph"><img class="px" src="../../icon-192.png" width="128" height="128" alt=""></div><div class="cap"><b>icon-192</b>192×192</div></div>
+      <div class="asset"><div class="ph"><img class="px" src="../../icon-512.png" width="180" height="180" alt=""></div><div class="cap"><b>icon-512</b>512×512</div></div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div>
+      <h2>iOS 主屏 / PWA</h2>
+      <div class="card" style="display:grid;place-items:center;padding:22px">
+        <div class="ios">
+          <img src="../../apple-touch-icon.png" alt="">
+          <div class="lbl">循链</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h2>Maskable 自适应图标</h2>
+      <div class="card" style="display:grid;place-items:center;padding:22px">
+        <div class="safe"><img class="px" src="../../icon-maskable-512.png" width="150" height="150" alt=""></div>
+      </div>
+      <p class="note">Android 会按厂商形状裁剪：图形收在中心 <b>80% 安全区</b>内，任意遮罩都不掉内容。</p>
+    </div>
+  </div>
+
+  <h2>站内使用：侧栏品牌标</h2>
+  <div class="card" style="display:flex;align-items:center;gap:44px;flex-wrap:wrap">
+    <div>
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.531" stroke-linecap="round">
+            <circle cx="8.25" cy="12" r="4.5"/><circle cx="15.75" cy="12" r="4.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">循链 LoopLink</div>
+          <div class="brand-sub">Waste Matching</div>
+        </div>
+      </div>
+      <div class="cap" style="margin-top:12px">1× 真实尺寸</div>
+    </div>
+    <div style="zoom:2.6">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.531" stroke-linecap="round">
+            <circle cx="8.25" cy="12" r="4.5"/><circle cx="15.75" cy="12" r="4.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">循链 LoopLink</div>
+          <div class="brand-sub">Waste Matching</div>
+        </div>
+      </div>
+      <div class="cap" style="margin-top:12px">2.6× 放大</div>
+    </div>
+  </div>
+  <p class="note">侧栏用的是同一图形的<b>单色版</b>（<code>looplink-mark-mono.svg</code>），画在 <code>.brand-mark</code> 的 36px 渐变底板上。几何与 <code>bold</code> 档同源 —— 24 栅格里的 <code>r:4.5 sw:2.531 cx:8.25/15.75</code>，正是 512 栅格按 ÷ 24 × 512 = 21.333 换过来的，所以标签图标和站内标识是同一个形状。</p>
+
+  <h2>三档几何</h2>
+  <div class="card">
+    <div class="row" style="align-items:center;gap:34px">
+      <div class="asset"><div class="ph" style="height:150px"><img class="px" src="../../favicon-32.png" width="32" height="32" alt=""></div><div class="cap"><b>bold 加粗版</b>16 / 32px · 无断口</div></div>
+      <div class="asset"><div class="ph" style="height:150px"><img class="px" src="../../icon-192.png" width="108" height="108" alt=""></div><div class="cap"><b>fine 精致版</b>≥48px · 带断口</div></div>
+      <div class="asset"><div class="ph" style="height:150px"><img class="px" src="../../icon-maskable-512.png" width="108" height="108" alt=""></div><div class="cap"><b>flat + 安全区</b>iOS / Android 遮罩</div></div>
+      <div style="flex:1;min-width:250px;font-size:12.5px;color:var(--muted);line-height:1.9">
+        小尺寸<b>加粗 + 取消断口</b>，16px 才不会糊成色块；<br>
+        大尺寸<b>带断口</b>，两环才真正「扣」起来；<br>
+        iOS / Android 各按各的系统规则出图。
+      </div>
+    </div>
+  </div>
+
+  <h2>已接入的 &lt;head&gt; 标签</h2>
+  <pre>&lt;<span class="t">link</span> rel="icon" href="favicon.ico" sizes="32x32"&gt;
+&lt;<span class="t">link</span> rel="icon" href="favicon.svg" type="image/svg+xml"&gt;
+&lt;<span class="t">link</span> rel="apple-touch-icon" href="apple-touch-icon.png"&gt;
+&lt;<span class="t">link</span> rel="manifest" href="site.webmanifest"&gt;
+&lt;<span class="t">meta</span> name="theme-color" content="#0f8b6c"&gt;</pre>
+  <p class="note">六个功能页（<code>index/match/region/supply/proc/demand.html</code>）均已加上，子目录的 <code>legacy/index.spa.html</code> 用 <code>../</code> 前缀接入。</p>
+
+  <h2>源文件与重新出图</h2>
+  <p class="note">
+    <code>looplink-mark.svg</code> 精致版 ·
+    <code>looplink-mark-small.svg</code> 加粗版 ·
+    <code>looplink-mark-flat.svg</code> 全出血版 ·
+    <code>looplink-mark-mono.svg</code> 侧栏单色标<br>
+    （都在 <code>assets/brand/</code> 下）
+  </p>
+  <pre>npm i @resvg/resvg-js --no-save
+node assets/brand/build-icons.cjs</pre>
+  <p class="note">改完源 SVG 跑一次即可：根目录的 <code>favicon*</code> / <code>icon-*</code> / <code>apple-touch-icon.png</code> / <code>site.webmanifest</code> 会全部重写。侧栏那个内联 SVG 在 <code>assets/app.js</code> 的 <code>buildShell()</code> 里，需要手动同步。</p>
+</div>
+</body>
+</html>
