@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 供给方·废物登记</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="supply">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <nav class="mnav" id="mnav"></nav>
+    <div class="content">
+      <!-- ============ SUPPLY ============ -->
+      <section class="view active" id="view-supply">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>供给方废物登记</div>
+              <span class="card-sub">登记后自动进入撮合池</span>
+            </div>
+            <div class="card-body">
+              <form id="form-supply" class="form-grid">
+                <div class="field full">
+                  <label>企业名称<span>*</span></label>
+                  <input name="company" required placeholder="如：江西洪都印务有限公司">
+                </div>
+                <div class="field">
+                  <label>废物类型<span>*</span></label>
+                  <select name="type" id="sel-supply-type" required></select>
+                </div>
+                <div class="field">
+                  <label>月产出量（吨）<span>*</span></label>
+                  <input name="qty" type="number" min="1" step="1" required placeholder="如：320">
+                </div>
+                <div class="field">
+                  <label>期望处置单价（元/吨）</label>
+                  <input name="price" type="number" min="0" step="10" placeholder="如：1180">
+                </div>
+                <div class="field">
+                  <label>所在省份<span>*</span></label>
+                  <select name="province" class="sel-province" required></select>
+                </div>
+                <div class="field">
+                  <label>所在城市<span>*</span></label>
+                  <input name="city" required placeholder="如：南昌">
+                  <span class="hint">用于估算运输距离与运费</span>
+                </div>
+                <div class="field full" style="flex-direction:row;justify-content:flex-end">
+                  <button type="submit" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    提交登记
+                  </button>
+                </div>
+              </form>
+              <div class="tip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v.2"/><path d="M12 11v5"/></svg>
+                <div>提交后立即重新撮合：先按<b>废物品类</b>筛出可接收的加工厂 → 校验其<b>产能余量</b> → 按<b>再生品收率</b>折算产出 → 再匹配下游需求方。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>供给结构</div>
+            </div>
+            <div class="card-body" id="supply-structure" style="padding-top:10px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>已登记废物清单</div>
+            <span class="card-sub" id="supply-count"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>企业名称</th><th>废物类型</th><th>月产出量</th><th>期望单价</th>
+                <th>省份 / 城市</th><th>承接可行性</th><th>撮合去向</th><th style="text-align:right">操作</th>
+              </tr></thead>
+              <tbody id="tbody-supply"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="loading-ov" id="loading">
+  <div>
+    <div class="spinner" style="margin:0 auto"></div>
+    <div class="loading-txt" id="loading-txt">正在构建撮合链路…</div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

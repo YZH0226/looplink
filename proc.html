@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 加工厂·处理能力</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="proc">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <nav class="mnav" id="mnav"></nav>
+    <div class="content">
+      <!-- ============ PROCESSOR ============ -->
+      <section class="view active" id="view-proc">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>加工厂处理能力登记</div>
+              <span class="card-sub">处理工艺 + 再生品收率是撮合的关键</span>
+            </div>
+            <div class="card-body">
+              <form id="form-proc" class="form-grid">
+                <div class="field">
+                  <label>工厂名称<span>*</span></label>
+                  <input name="name" required placeholder="如：江西循环再生纸业">
+                </div>
+                <div class="field">
+                  <label>所在省份<span>*</span></label>
+                  <select name="province" class="sel-province" required></select>
+                </div>
+                <div class="field">
+                  <label>所在城市<span>*</span></label>
+                  <input name="city" required placeholder="如：东莞">
+                  <span class="hint">省内城市直接填市名，跨省撮合按此计算里程</span>
+                </div>
+                <div class="field full">
+                  <label>可接收废物类型<span>*</span> <span class="hint">（可多选）</span></label>
+                  <div class="chk-group" id="chk-accepts"></div>
+                </div>
+                <div class="field">
+                  <label>月处理能力（吨）<span>*</span></label>
+                  <input name="cap" type="number" min="1" required placeholder="如：800">
+                </div>
+                <div class="field">
+                  <label>当前已占用（吨）</label>
+                  <input name="load" type="number" min="0" value="0">
+                </div>
+                <div class="field full">
+                  <label>主要产出物与收率 <span class="hint">（收率 = 每吨废物产出吨数）</span></label>
+                  <div id="outs-box"></div>
+                  <button type="button" class="btn btn-ghost btn-sm" id="btn-add-out" style="align-self:flex-start">+ 增加产出物</button>
+                </div>
+                <div class="field full" style="flex-direction:row;justify-content:flex-end">
+                  <button type="submit" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    提交登记
+                  </button>
+                </div>
+              </form>
+              <div class="tip">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8.2v.2"/><path d="M12 11v5"/></svg>
+                <div>产出物名称必须与需求方登记的产品类型<b>完全一致</b>（如「再生纸浆」），否则该产出物无法被撮合，只会出现在「待消纳」中。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>平台产能池</div>
+            </div>
+            <div class="card-body" id="proc-structure" style="padding-top:10px"></div>
+          </div>
+        </div>
+
+        <div id="proc-cards" class="proc-grid"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="loading-ov" id="loading">
+  <div>
+    <div class="spinner" style="margin:0 auto"></div>
+    <div class="loading-txt" id="loading-txt">正在构建撮合链路…</div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

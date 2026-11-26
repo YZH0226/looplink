@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 区域联动</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="region">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <nav class="mnav" id="mnav"></nav>
+    <div class="content">
+      <!-- ============ REGION ============ -->
+      <section class="view active" id="view-region">
+        <div class="grid g-2-1" style="margin-bottom:14px">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>大区联动矩阵</div>
+              <span class="card-sub">行 = 废物产出大区 · 列 = 加工消纳大区 · 吨/月</span>
+            </div>
+            <div class="card-body" id="region-matrix" style="padding-top:12px"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title"><span class="bar"></span>省内 / 跨省结构</div>
+            </div>
+            <div class="card-body" id="region-split" style="padding-top:12px"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>省份供需台账</div>
+            <span class="card-sub">撮合后更新</span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>省份</th><th>大区</th><th>废物产出</th><th>加工余量</th>
+                <th>再生品需求</th><th>跨省调出</th><th>跨省调入</th><th>供需状态</th>
+              </tr></thead>
+              <tbody id="tbody-region"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>跨省链路明细</div>
+            <span class="card-sub" id="cross-count"></span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr>
+                <th>废物来源</th><th>承接加工厂</th><th>品类</th><th>运量</th>
+                <th>运输距离</th><th>单位运费</th><th>收运运费</th><th>匹配度</th>
+              </tr></thead>
+              <tbody id="tbody-cross"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="loading-ov" id="loading">
+  <div>
+    <div class="spinner" style="margin:0 auto"></div>
+    <div class="loading-txt" id="loading-txt">正在构建撮合链路…</div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

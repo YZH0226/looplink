@@ -1,0 +1,6 @@
+# 测试时临时安装的依赖（README 中使用 npm i ... --no-save）
+node_modules/
+
+# 系统 / 编辑器杂项
+.DS_Store
+Thumbs.db

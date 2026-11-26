@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>循链 LoopLink · 智能撮合</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="match">
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <nav class="mnav" id="mnav"></nav>
+    <div class="content">
+      <!-- ============ MATCH ============ -->
+      <section class="view active" id="view-match">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-head">
+            <div class="card-title"><span class="bar"></span>撮合结果总览</div>
+            <span class="card-sub" id="match-time">尚未运行</span>
+          </div>
+          <div class="flow-sum" id="match-summary"></div>
+        </div>
+
+        <div class="card">
+          <div class="match-toolbar">
+            <div class="slider-wrap">
+              <span>匹配度阈值</span>
+              <input type="range" id="score-range" min="0" max="95" value="0" step="5">
+              <span class="range-val num" id="score-val">0</span>
+            </div>
+            <div style="flex:1"></div>
+            <div class="seg" id="seg-cross">
+              <button class="on" data-f="all">全部</button>
+              <button data-f="cross">仅跨省</button>
+              <button data-f="same">仅省内</button>
+            </div>
+            <div class="chip-row">
+              <span class="chip" id="chip-total">共 0 条链路</span>
+              <span class="chip" id="chip-ok">已闭环 0</span>
+              <span class="chip" id="chip-part">部分匹配 0</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="btn-export">导出撮合方案</button>
+          </div>
+          <div class="card-body" id="match-list" style="padding:16px"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="loading-ov" id="loading">
+  <div>
+    <div class="spinner" style="margin:0 auto"></div>
+    <div class="loading-txt" id="loading-txt">正在构建撮合链路…</div>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
