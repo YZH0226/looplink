@@ -42,7 +42,8 @@ input::placeholder{color:#a9b8b2}
   padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
 .brand{display:flex;align-items:center;gap:10px;padding:0 6px 20px}
 .brand-mark{width:36px;height:36px;border-radius:11px;flex:0 0 36px;
-  background:linear-gradient(145deg,#14b189,#0a6b53);display:grid;place-items:center;
+  /* 品牌绿渐变 token：与站点图标 (assets/brand/build-icons.cjs) 同一个梯度 */
+  background:linear-gradient(135deg,#16bd93 0%,#0f8b6c 55%,#0a6b53 100%);display:grid;place-items:center;
   box-shadow:0 8px 18px -8px rgba(15,139,108,.75)}
 .brand-mark svg{width:20px;height:20px}
 .brand-name{font-weight:700;font-size:15.5px;letter-spacing:.2px;line-height:1.2}

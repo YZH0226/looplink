@@ -211,10 +211,10 @@ function buildShell(){
     aside.innerHTML = `
       <a class="brand" href="index.html">
         <div class="brand-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4.5 14.5a4 4 0 0 1 0-5.6l3-3a4 4 0 0 1 5.6 0"/>
-            <path d="M19.5 9.5a4 4 0 0 1 0 5.6l-3 3a4 4 0 0 1-5.6 0"/>
-            <path d="M8.5 12h7"/>
+          <!-- 循链单色标：与 favicon 同源，见 assets/brand/looplink-mark-mono.svg -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.531" stroke-linecap="round">
+            <circle cx="8.25" cy="12" r="4.5"/>
+            <circle cx="15.75" cy="12" r="4.5"/>
           </svg>
         </div>
         <div>
