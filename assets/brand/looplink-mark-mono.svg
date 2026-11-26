@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- 循链 LoopLink · 单色标（白色两环互扣）
+       用于 .brand-mark 渐变底板之上，见 assets/app.js 的 buildShell()。
+       几何与 favicon 的「加粗版」同源：512 栅格 { r:96, sw:54, cx:176/336 } ÷ 24 × 512 = 21.333 -->
+  <title>循链 LoopLink</title>
+  <g fill="none" stroke="#fff" stroke-width="2.531" stroke-linecap="round">
+    <circle cx="8.25" cy="12" r="4.5"/>
+    <circle cx="15.75" cy="12" r="4.5"/>
+  </g>
+</svg>
